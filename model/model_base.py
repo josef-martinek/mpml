@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-class MLMCModel(ABC):
+
+class MLMCModelBase(ABC):
 
     @property
     @abstractmethod
