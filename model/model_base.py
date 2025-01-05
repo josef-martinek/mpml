@@ -1,7 +1,20 @@
 from abc import ABC, abstractmethod
 
 
-class MLMCModelBase(ABC):
+class ModelEvaluationBase(ABC):
+
+    @property
+    @abstractmethod
+    def value(self):
+        pass
+
+    @property
+    @abstractmethod
+    def cost(self):
+        pass
+
+
+class ModelBase(ABC):
 
     @property
     @abstractmethod
@@ -9,5 +22,5 @@ class MLMCModelBase(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self):
+    def evaluate(self, level, sample) -> ModelEvaluationBase:
         pass
