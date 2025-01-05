@@ -1,4 +1,5 @@
-from model.model_base import MLMCModelBase
+from model.model_base import ModelBase
+from sample.sample_base import SampleBase
 import numpy as np
 from abc import ABC, abstractmethod
 
@@ -7,12 +8,12 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
 
     @property
     @abstractmethod
-    def estimate(self):
+    def nsamp_per_level(self):
         pass
 
-    @property
+    @nsamp_per_level.setter
     @abstractmethod
-    def nsamp_per_level(self):
+    def nsamp_per_level(self, value):
         pass
 
     @property
@@ -26,7 +27,7 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
         pass
 
     @abstractmethod
-    def get_ml_estimates_per_level(self):
+    def cost_per_level_per_sample(self):
         pass
 
     @abstractmethod
@@ -35,8 +36,8 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
 
 
 class MLMCAdaptiveEstimatorBase(ABC):
-    def __init__(self, parameter, model: MLMCModelBase, Lmin, Lmax, alpha, beta, gamma, **kwargs):
-        self._parameter = parameter
+    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta, gamma, **kwargs):
+        self._sample = sample
         self._model = model
         if Lmin >= Lmax:
             raise ValueError("Estimator must have at least 2 levels.")
@@ -73,7 +74,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
     def run(self, mse_tol, init_nsamp=10):
         self._reset_results()
         cur_max_level = self._Lmin + 1
-        cur_ml_estimator = self._setup_nonadaptive_ml_estimator(init_nsamp)
+        cur_ml_estimator = self._setup_nonadaptive_ml_estimator(init_nsamp, cur_max_level)
         while cur_max_level <= self._Lmax:
             #est_per_level, var_per_level, cost_per_level = cur_ml_estimator.get_ml_estimates_per_level()
             cur_ml_estimator.run()
@@ -83,7 +84,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
                 self._conv_success = True
                 self._save_results(cur_ml_estimator, cur_max_level)
             if new_max_level <= self._Lmax: 
-                cur_ml_estimator = self._update_nonadaptive_ml_estimator(cur_ml_estimator, new_max_level, mse_tol)
+                cur_ml_estimator = self._update_nonadaptive_ml_estimator(cur_ml_estimator, new_max_level, mse_tol, init_nsamp)
             cur_max_level = new_max_level
         self._conv_success = False
         if cur_max_level > self._Lmax:
@@ -92,18 +93,18 @@ class MLMCAdaptiveEstimatorBase(ABC):
         else:
             raise RuntimeError("Convergence not achieved, but max level not exceeded. That means bug.")
 
+    @abstractmethod
+    def _setup_nonadaptive_ml_estimator(nsamp, max_level) -> MLMCNonAdaptiveEstimatorBase:
+        pass
+
+    @abstractmethod
+    def _update_nonadaptive_ml_estimator(estimator, new_max_level, mse_tol, init_nsamp) -> MLMCNonAdaptiveEstimatorBase:
+        pass
+
     def _save_results(self, final_ml_estimator, final_max_level):
         self._estimate = final_ml_estimator.estimate()
         self._nsamp_per_level = final_ml_estimator.nsamp_per_level()
         self._max_level_used = final_max_level
-
-    @abstractmethod
-    def _setup_nonadaptive_ml_estimator(nsamp) -> MLMCNonAdaptiveEstimatorBase:
-        pass
-
-    @abstractmethod
-    def _update_nonadaptive_ml_estimator(estimator, new_max_level, mse_tol) -> MLMCNonAdaptiveEstimatorBase:
-        pass
 
     def _conv_check(self, max_level, ml_estimator, mse_tol): 
         #If bias is not under tol, increase max level. If both bias and variance are under tol, finish.
