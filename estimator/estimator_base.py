@@ -26,12 +26,27 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
     def var_per_level(self):
         pass
 
+    @property
+    @abstractmethod
+    def est_per_level_adjusted(self):
+        pass
+
+    @property
+    @abstractmethod
+    def var_per_level_adjusted(self):
+        pass
+
+    @property
     @abstractmethod
     def cost_per_level_per_sample(self):
         pass
 
     @abstractmethod
     def run(self):
+        pass
+
+    @abstractmethod
+    def adjust_estimates_and_variances(self, alpha, beta):
         pass
 
 
@@ -78,6 +93,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         while cur_max_level <= self._Lmax:
             #est_per_level, var_per_level, cost_per_level = cur_ml_estimator.get_ml_estimates_per_level()
             cur_ml_estimator.run()
+            cur_ml_estimator.adjust_estimates_and_variances(self._alpha, self._beta)
             new_max_level, conv_success = self._conv_check(cur_max_level, cur_ml_estimator, mse_tol)
             if conv_success:
                 print("convergence successful")
@@ -108,14 +124,14 @@ class MLMCAdaptiveEstimatorBase(ABC):
 
     def _conv_check(self, max_level, ml_estimator, mse_tol): 
         #If bias is not under tol, increase max level. If both bias and variance are under tol, finish.
-        if (not self._is_bias_under_tol(ml_estimator.est_per_level[-1], mse_tol)):
+        if (not self._is_bias_under_tol(ml_estimator.est_per_level_adjusted[-1], mse_tol)):
             max_level += 1
             conv_success = False
-        if (self._is_bias_under_tol(ml_estimator.est_per_level[-1], mse_tol) and self._is_variance_under_tol(ml_estimator, mse_tol)):
+        if (self._is_bias_under_tol(ml_estimator.est_per_level_adjusted[-1], mse_tol) and self._is_variance_under_tol(ml_estimator, mse_tol)):
             conv_success = True
         return max_level, conv_success
 
-    def _is_bias_under_tol(self, finest_level_est, mse_tol):
+    def _is_bias_under_tol(self, finest_level_est, mse_tol): #TODO If nsamp on finest level is too low, innacurate. Extrapolate from the previous level in that case.
         m = self._model.m() #TODO
         if abs(finest_level_est) <= ((self._r*(m**self._alpha)-1)/np.sqrt(2))*np.sqrt(mse_tol):
             return True
@@ -124,7 +140,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
 
     def _is_variance_under_tol(self, ml_estimator, mse_tol):
         num_samp = ml_estimator.nsamp_per_level()
-        var_per_level = ml_estimator.var_per_level()
+        var_per_level = ml_estimator.var_per_level_adjusted()
         sample_var = np.sum(var_per_level / num_samp)
         if sample_var <= mse_tol/2:
             return True
