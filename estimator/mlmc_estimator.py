@@ -22,28 +22,21 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
         self._est_per_level_adjusted = None
         self._var_per_level_adjusted = None
         self._cost_per_level_per_sample = None
-        self._samples_per_level = None
         self._mc_differences_per_level = None
 
-    def run(self, save_samples=False, save_mc_differences=False):
+    def run(self, save_mc_differences=False):
         self._reset_results()
 
         # Initialize containers to store results
         self._est_per_level = []
         self._var_per_level = []
         self._cost_per_level_per_sample = []
-        self._samples_per_level = [] if save_samples else None
         self._mc_differences_per_level = [] if save_mc_differences else None
 
         # Iterate through levels from Lmin to Lmax
-        for level, nsamp in enumerate(self._nsamp_per_level, start=self._Lmin):
-            # Generate samples for the current level
-            samples = self._sample.generate(nsamp)
-            if save_samples:
-                self._samples_per_level.append(samples)
-
+        for level, nsamp in enumerate(self._nsamp_per_level.astype(int), start=self._Lmin):
             # Compute model outputs for the current level
-            mc_differences, cost_per_sample = self._get_mc_differences(level, samples)
+            mc_differences, cost_per_sample = self._get_mc_differences(level, nsamp)
             self._cost_per_level_per_sample.append(cost_per_sample)
             if save_mc_differences:
                 self._mc_differences_per_level.append(mc_differences)
@@ -60,10 +53,11 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
         self._estimate = sum(self._est_per_level)
         self._run_success = True
 
-    def _get_mc_differences(self, level, samples):
+    def _get_mc_differences(self, level, nsamp):
         mc_differences = []
         level_cost = []
-        for sample in samples:
+        for i in range(nsamp):
+            sample = self._sample.draw()
             if level == self._Lmin:
                 evaluation = self._model.evaluate(level, sample)
                 mc_differences.append(evaluation.value)
