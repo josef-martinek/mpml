@@ -99,6 +99,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
                 print("convergence successful")
                 self._conv_success = True
                 self._save_results(cur_ml_estimator, cur_max_level)
+                return
             if new_max_level <= self._Lmax: 
                 cur_ml_estimator = self._update_nonadaptive_ml_estimator(cur_ml_estimator, new_max_level, mse_tol, init_nsamp)
             cur_max_level = new_max_level
@@ -118,29 +119,30 @@ class MLMCAdaptiveEstimatorBase(ABC):
         pass
 
     def _save_results(self, final_ml_estimator, final_max_level):
-        self._estimate = final_ml_estimator.estimate()
-        self._nsamp_per_level = final_ml_estimator.nsamp_per_level()
+        self._estimate = final_ml_estimator.estimate
+        self._nsamp_per_level = final_ml_estimator.nsamp_per_level
         self._max_level_used = final_max_level
 
     def _conv_check(self, max_level, ml_estimator, mse_tol): 
         #If bias is not under tol, increase max level. If both bias and variance are under tol, finish.
-        if (not self._is_bias_under_tol(ml_estimator.est_per_level_adjusted[-1], mse_tol)):
-            max_level += 1
-            conv_success = False
         if (self._is_bias_under_tol(ml_estimator.est_per_level_adjusted[-1], mse_tol) and self._is_variance_under_tol(ml_estimator, mse_tol)):
             conv_success = True
+        else:
+            conv_success = False
+        if (not self._is_bias_under_tol(ml_estimator.est_per_level_adjusted[-1], mse_tol)):
+            max_level += 1
         return max_level, conv_success
 
     def _is_bias_under_tol(self, finest_level_est, mse_tol): #TODO If nsamp on finest level is too low, innacurate. Extrapolate from the previous level in that case.
-        m = self._model.m() #TODO
+        m = self._model.m #TODO
         if abs(finest_level_est) <= ((self._r*(m**self._alpha)-1)/np.sqrt(2))*np.sqrt(mse_tol):
             return True
         else:
             return False
 
     def _is_variance_under_tol(self, ml_estimator, mse_tol):
-        num_samp = ml_estimator.nsamp_per_level()
-        var_per_level = ml_estimator.var_per_level_adjusted()
+        num_samp = ml_estimator.nsamp_per_level
+        var_per_level = ml_estimator.var_per_level_adjusted
         sample_var = np.sum(var_per_level / num_samp)
         if sample_var <= mse_tol/2:
             return True

@@ -121,18 +121,22 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
     @property
     def cost_per_level_per_sample(self):
         return self._cost_per_level_per_sample
+    
+    @property
+    def estimate(self):
+        return self._estimate
 
 
 class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
 
     def _setup_nonadaptive_ml_estimator(self, nsamp, max_level):
-        return MLMCNonAdaptiveEstimator(self._sample, self._model, nsamp*np.ones(1,max_level-self._Lmin+1), self._Lmin)
+        return MLMCNonAdaptiveEstimator(self._sample, self._model, nsamp*np.ones(max_level-self._Lmin+1), self._Lmin)
     
     def _update_nonadaptive_ml_estimator(self, estimator: MLMCNonAdaptiveEstimator, new_max_level, mse_tol, init_nsamp):
         #First, extrapolate var per level if it's zero at some point, based on tha, then update nsamp. If new max level is higher than old max level, add new level with init_nsamp.
         nsamp_old = deepcopy(estimator.nsamp_per_level)
         nsamp_new = []
-        const_ = (2/mse_tol)*np.sum(np.sqrt(estimator.var_per_level_adjusted*estimator.cost_per_level_per_sample))
+        const_ = (2/mse_tol)*np.sum(np.sqrt(np.array(estimator.var_per_level_adjusted)*np.array(estimator.cost_per_level_per_sample)))
         for i in range(len(nsamp_old)):
             nsamp_new.append(np.ceil(const_*np.sqrt(estimator.var_per_level_adjusted[i]/estimator.cost_per_level_per_sample[i])))
         if new_max_level > estimator._Lmax:
