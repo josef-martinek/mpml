@@ -43,7 +43,7 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
 
             # Compute estimates and variances for the current level
             level_estimate = np.mean(mc_differences)
-            level_variance = np.var(mc_differences, ddof=1)  # Unbiased variance
+            level_variance = np.var(mc_differences, ddof=0)
 
             # Store the results
             self._est_per_level.append(level_estimate)
