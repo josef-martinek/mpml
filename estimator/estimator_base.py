@@ -3,6 +3,7 @@ from sample.sample_base import SampleBase
 import numpy as np
 from abc import ABC, abstractmethod
 import logging
+import time
 
 
 class MLMCNonAdaptiveEstimatorBase(ABC):
@@ -42,9 +43,16 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
     def cost_per_level_per_sample(self):
         pass
 
-    @abstractmethod
-    def run(self):
+    def run(self, *args, **kwargs):
         logging.debug(f'ML estimator nsamp: {self.nsamp_per_level}')
+        start_time = time.time()
+        self._run_impl(*args, **kwargs)
+        end_time = time.time()
+        logging.debug(f'ML estimator runtime: {end_time - start_time}')
+
+    @abstractmethod
+    def _run_impl(self):
+        pass
 
     @abstractmethod
     def adjust_estimates_and_variances(self, alpha, beta):

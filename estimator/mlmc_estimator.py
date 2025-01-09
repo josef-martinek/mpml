@@ -24,8 +24,7 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
         self._cost_per_level_per_sample = None
         self._mc_differences_per_level = None
 
-    def run(self, save_mc_differences=False):
-        super().run()
+    def _run_impl(self, save_mc_differences=False):
         self._reset_results()
 
         # Initialize containers to store results
