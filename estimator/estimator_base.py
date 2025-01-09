@@ -2,6 +2,7 @@ from model.model_base import ModelBase
 from sample.sample_base import SampleBase
 import numpy as np
 from abc import ABC, abstractmethod
+import logging
 
 
 class MLMCNonAdaptiveEstimatorBase(ABC):
@@ -43,7 +44,7 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
 
     @abstractmethod
     def run(self):
-        pass
+        logging.debug(f'ML estimator nsamp: {self.nsamp_per_level}')
 
     @abstractmethod
     def adjust_estimates_and_variances(self, alpha, beta):
@@ -51,7 +52,7 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
 
 
 class MLMCAdaptiveEstimatorBase(ABC):
-    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta, gamma, **kwargs):
+    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta, approximate_gamma, **kwargs):
         self._sample = sample
         self._model = model
         if Lmin >= Lmax:
@@ -60,7 +61,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         self._Lmax = Lmax
         self._alpha = alpha
         self._beta = beta
-        self._gamma = gamma
+        self._gamma = approximate_gamma
         self._r = 0.7
         self._reset_results()
 
@@ -91,12 +92,11 @@ class MLMCAdaptiveEstimatorBase(ABC):
         cur_max_level = self._Lmin + 1
         cur_ml_estimator = self._setup_nonadaptive_ml_estimator(init_nsamp, cur_max_level)
         while cur_max_level <= self._Lmax:
-            #est_per_level, var_per_level, cost_per_level = cur_ml_estimator.get_ml_estimates_per_level()
             cur_ml_estimator.run()
             cur_ml_estimator.adjust_estimates_and_variances(self._alpha, self._beta)
             new_max_level, conv_success = self._conv_check(cur_max_level, cur_ml_estimator, mse_tol)
             if conv_success:
-                print("convergence successful")
+                logging.info('Convergence successful')
                 self._conv_success = True
                 self._save_results(cur_ml_estimator, cur_max_level)
                 return
@@ -105,7 +105,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
             cur_max_level = new_max_level
         self._conv_success = False
         if cur_max_level > self._Lmax:
-            print("Convergence not achieved, max level exceeded")
+            logging.warning('Convergence not achieve, max level exceeded.')
             self._save_results(cur_ml_estimator, cur_max_level)
         else:
             raise RuntimeError("Convergence not achieved, but max level not exceeded. That means bug.")
