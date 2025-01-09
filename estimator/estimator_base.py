@@ -123,8 +123,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         self._nsamp_per_level = final_ml_estimator.nsamp_per_level
         self._max_level_used = final_max_level
 
-    def _conv_check(self, max_level, ml_estimator, mse_tol): 
-        #If bias is not under tol, increase max level. If both bias and variance are under tol, finish.
+    def _conv_check(self, max_level, ml_estimator, mse_tol):
         if (self._is_bias_under_tol(ml_estimator.est_per_level_adjusted[-1], mse_tol) and self._is_variance_under_tol(ml_estimator, mse_tol)):
             conv_success = True
         else:
