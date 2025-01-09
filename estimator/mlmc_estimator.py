@@ -134,5 +134,7 @@ class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
         for i in range(len(nsamp_old)):
             nsamp_new.append(np.ceil(const_*np.sqrt(estimator.var_per_level_adjusted[i]/estimator.cost_per_level_per_sample[i])))
         if new_max_level > estimator._Lmax:
-            nsamp_new.append(init_nsamp)
-        return MLMCNonAdaptiveEstimator(self._sample, self._model, nsamp_new, self._Lmin)
+            var_extrapolated = estimator.var_per_level_adjusted[-1]/(self._model.m**self._beta)
+            cost_extrapolated = estimator.cost_per_level_per_sample[-1]*(self._model.m**self._gamma)
+            nsamp_new.append(np.ceil(const_*np.sqrt(var_extrapolated/cost_extrapolated)))
+        return MLMCNonAdaptiveEstimator(self._sample, self._model, np.array(nsamp_new), self._Lmin)
