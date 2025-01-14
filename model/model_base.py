@@ -22,5 +22,16 @@ class ModelBase(ABC):
         pass
 
     @abstractmethod
+    def get_hl(self, level):
+        pass
+
+    @abstractmethod
     def evaluate(self, level, sample) -> ModelEvaluationBase:
+        pass
+
+
+class MPMLModel(ModelBase):
+
+    @abstractmethod
+    def evaluate(self, level, sample, comp_tol) -> ModelEvaluationBase:
         pass

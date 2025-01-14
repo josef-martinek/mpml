@@ -4,6 +4,7 @@ from sample.sample_base import SampleBase
 import numpy as np
 from copy import deepcopy
 
+
 class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
 
     def __init__(self, sample: SampleBase, model: ModelBase, nsamp_per_level: np.array, Lmin):
@@ -24,7 +25,7 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
         self._cost_per_level_per_sample = None
         self._mc_differences_per_level = None
 
-    def _run_impl(self, save_mc_differences=False):
+    def _run_impl(self, save_mc_differences=False, **kwargs):
         self._reset_results()
 
         # Initialize containers to store results
@@ -36,7 +37,7 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
         # Iterate through levels from Lmin to Lmax
         for level, nsamp in enumerate(self._nsamp_per_level.astype(int), start=self._Lmin):
             # Compute model outputs for the current level
-            mc_differences, cost_per_sample = self._get_mc_differences(level, nsamp)
+            mc_differences, cost_per_sample = self._get_mc_differences(level, nsamp, **kwargs)
             self._cost_per_level_per_sample.append(cost_per_sample)
             if save_mc_differences:
                 self._mc_differences_per_level.append(mc_differences)
@@ -53,22 +54,25 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
         self._estimate = sum(self._est_per_level)
         self._run_success = True
 
-    def _get_mc_differences(self, level, nsamp):
+    def _get_mc_differences(self, level, nsamp, **kwargs):
         mc_differences = []
         level_cost = []
         for i in range(nsamp):
             sample = self._sample.draw()
             if level == self._Lmin:
-                evaluation = self._model.evaluate(level, sample)
+                evaluation = self._evaluate_model(level, sample, **kwargs)
                 mc_differences.append(evaluation.value)
                 level_cost.append(evaluation.cost)
             else:
-                eval_fine = self._model.evaluate(level, sample)
-                eval_coarse = self._model.evaluate(level-1, sample)
+                eval_fine = self._evaluate_model(level, sample, **kwargs)
+                eval_coarse = self._evaluate_model(level-1, sample, **kwargs)
                 mc_differences.append(eval_fine.value - eval_coarse.value)
                 level_cost.append(eval_fine.cost + eval_coarse.cost)
         cost_per_sample = np.mean(level_cost)
         return mc_differences, cost_per_sample
+
+    def _evaluate_model(self, level, sample):
+        return self._model.evaluate(level, sample)
     
     def adjust_estimates_and_variances(self, alpha, beta):
         self._est_per_level_adjusted = deepcopy(self._est_per_level)
@@ -123,10 +127,10 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
 
 class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
 
-    def _setup_nonadaptive_ml_estimator(self, nsamp, max_level):
+    def _setup_nonadaptive_ml_estimator(self, nsamp, max_level) -> MLMCNonAdaptiveEstimator:
         return MLMCNonAdaptiveEstimator(self._sample, self._model, nsamp*np.ones(max_level-self._Lmin+1), self._Lmin)
     
-    def _update_nonadaptive_ml_estimator(self, estimator: MLMCNonAdaptiveEstimator, new_max_level, mse_tol, init_nsamp):
+    def _update_nonadaptive_ml_estimator(self, estimator: MLMCNonAdaptiveEstimator, new_max_level, mse_tol, init_nsamp) -> MLMCNonAdaptiveEstimator:
         nsamp_old = deepcopy(estimator.nsamp_per_level)
         nsamp_new = []
         const_ = (2/mse_tol)*np.sum(np.sqrt(np.array(estimator.var_per_level_adjusted)*np.array(estimator.cost_per_level_per_sample)))

@@ -60,7 +60,7 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
 
 
 class MLMCAdaptiveEstimatorBase(ABC):
-    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta, approximate_gamma, **kwargs):
+    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta, approximate_gamma):
         self._sample = sample
         self._model = model
         if Lmin >= Lmax:
@@ -74,6 +74,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         self._reset_results()
 
     def _reset_results(self):
+        self._final_estimator = None
         self._conv_success = None
         self._estimate = None
         self._nsamp_per_level = None
@@ -94,6 +95,10 @@ class MLMCAdaptiveEstimatorBase(ABC):
     @property
     def max_level_used(self):
         return self._max_level_used
+    
+    @property
+    def final_estimator(self):
+        return self._final_estimator
 
     def run(self, mse_tol, init_nsamp=10):
         self._reset_results()
@@ -127,6 +132,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         pass
 
     def _save_results(self, final_ml_estimator, final_max_level):
+        self._final_estimator = final_ml_estimator
         self._estimate = final_ml_estimator.estimate
         self._nsamp_per_level = final_ml_estimator.nsamp_per_level
         self._max_level_used = final_max_level
