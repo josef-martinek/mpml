@@ -45,7 +45,8 @@ class LognormalPDEModel(ModelBase):
         self._visualise = visualise
 
     def evaluate(self, level, sample) -> ModelEvaluationBase:
-        problem = self._setup_fenicsx_problem(level, sample)
+        a, L, bc = self._setup_fenicsx_problem(level, sample)
+        problem = LinearProblem(a, L, bcs=[bc], petsc_options=self._get_petsc_options())
         uh = problem.solve()
         qoi = self._get_qoi_from_solution(uh, level)
         if self._visualise:
@@ -54,7 +55,7 @@ class LognormalPDEModel(ModelBase):
         return LognormalPDEEvaluation(qoi, evaluation_cost)
 
     def _get_mesh(self, level):
-        num_el = int(np.round(1/self._get_hl(level)))
+        num_el = int(np.round(1/self.get_hl(level)))
         msh = mesh.create_rectangle(
                 comm=MPI.COMM_WORLD,
                 points=((0.0, 0.0), (1.0, 1.0)),
@@ -63,7 +64,7 @@ class LognormalPDEModel(ModelBase):
                 )
         return msh
     
-    def _get_hl(self, level):
+    def get_hl(self, level):
         return self._h0*(self._m**(-level))
 
     def _get_pde_coeff(self, x, sample):
@@ -75,7 +76,7 @@ class LognormalPDEModel(ModelBase):
         )
         return coeff
     
-    def _setup_fenicsx_problem(self, level, sample) -> LinearProblem:
+    def _setup_fenicsx_problem(self, level, sample):
         msh = self._get_mesh(level)
         V = fem.functionspace(msh, ("Lagrange", 1))
         x = ufl.SpatialCoordinate(msh)
@@ -99,12 +100,14 @@ class LognormalPDEModel(ModelBase):
         )
         boundary_dofs = fem.locate_dofs_topological(V, entity_dim=1, entities=boundary_facets)
         bc = fem.dirichletbc(value=ScalarType(0), dofs=boundary_dofs, V=V)
-        problem = LinearProblem(a, L, bcs=[bc], petsc_options={"ksp_type": "preonly", "pc_type": "lu"})
-        return problem
+        return a, L, bc
+    
+    def _get_petsc_options(self):
+        return {"ksp_type": "preonly", "pc_type": "lu"}
     
     def _get_qoi_from_solution(self, uh, level):
         uh_vec = uh.x.array
-        hl = self._get_hl(level)
+        hl = self.get_hl(level)
         return (hl**2)*sum(uh_vec)
     
     def _plot_solution(self, uh, level):
@@ -126,7 +129,7 @@ class LognormalPDEModel(ModelBase):
         plotter.show()
 
     def _get_eval_cost(self, level):
-        matrix_order = ((1/self._get_hl(level))-1)**2
+        matrix_order = ((1/self.get_hl(level))-1)**2
         return matrix_order**(3/2)
     
     @property
