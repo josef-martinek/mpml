@@ -45,8 +45,8 @@ class LognormalPDEModel(ModelBase):
         self._visualise = visualise
 
     def evaluate(self, level, sample) -> ModelEvaluationBase:
-        a, L, bc = self._setup_fenicsx_problem(level, sample)
-        problem = LinearProblem(a, L, bcs=[bc], petsc_options=self._get_petsc_options())
+        a, L, bc, msh = self._setup_fenicsx_problem(level, sample)
+        problem = LinearProblem(a, L, bcs=[bc], petsc_options=self._get_petsc_options(), jit_options={"timeout": 300})
         uh = problem.solve()
         qoi = self._get_qoi_from_solution(uh, level)
         if self._visualise:
@@ -100,7 +100,7 @@ class LognormalPDEModel(ModelBase):
         )
         boundary_dofs = fem.locate_dofs_topological(V, entity_dim=1, entities=boundary_facets)
         bc = fem.dirichletbc(value=ScalarType(0), dofs=boundary_dofs, V=V)
-        return a, L, bc
+        return a, L, bc, msh
     
     def _get_petsc_options(self):
         return {"ksp_type": "preonly", "pc_type": "lu"}
