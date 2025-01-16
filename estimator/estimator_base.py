@@ -44,11 +44,11 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
         pass
 
     def run(self, *args, **kwargs):
-        logging.debug(f'ML estimator nsamp: {self.nsamp_per_level}')
+        logging.info(f'ML estimator nsamp: {self.nsamp_per_level}')
         start_time = time.time()
         self._run_impl(*args, **kwargs)
         end_time = time.time()
-        logging.debug(f'ML estimator runtime: {end_time - start_time}')
+        logging.info(f'ML estimator runtime: {end_time - start_time}')
 
     @abstractmethod
     def _run_impl(self):
