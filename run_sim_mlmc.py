@@ -4,19 +4,20 @@ import numpy as np
 import logging
 import time
 
-np.random.seed(17)
-logging.basicConfig(level=logging.DEBUG, format='{levelname}: {message}', style='{')
+np.random.seed(22)
+logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
 
 sample = LognormalPDESample()
 model = LognormalPDEModel()
 
-estimator = MLMCAdaptiveEstimator(sample, model, Lmin=0, Lmax=5, alpha=2, beta=4, approximate_gamma=3)
+algorithm = MLMCAdaptiveEstimator(sample, model, Lmin=0, Lmax=5, alpha=2, beta=4, approximate_gamma=3)
 
 start_time = time.time()
-estimator.run(mse_tol=8e-7)
+algorithm.run(mse_tol=8e-6)
 end_time = time.time()
+estimator = algorithm.final_estimator
 
 logging.info(f'Total runtime: {end_time - start_time}')
 logging.info(f'Estimated QOI: {estimator.estimate}')
 logging.info(f'Final numer of samples per level: {estimator.nsamp_per_level}')
-logging.info(f'Max level used: {estimator.max_level_used}')
+logging.info(f'Cost per level per sample: {estimator.cost_per_level_per_sample}')
