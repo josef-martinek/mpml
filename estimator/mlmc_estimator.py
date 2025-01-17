@@ -3,6 +3,7 @@ from model.model_base import ModelBase
 from sample.sample_base import SampleBase
 import numpy as np
 from copy import deepcopy
+import logging
 
 
 class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
@@ -77,12 +78,12 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
     def adjust_estimates_and_variances(self, alpha, beta):
         self._est_per_level_adjusted = deepcopy(self._est_per_level)
         self._var_per_level_adjusted = deepcopy(self._var_per_level)
-        if len(self._nsamp_per_level) < 3:
-            pass
-        else:
-            for level in range(2, self._Lmax+1):
-                self._est_per_level_adjusted[level] = max(self._est_per_level_adjusted[level], self._est_per_level_adjusted[level-1]/(self._model.m**alpha))
-                self._var_per_level_adjusted[level] = max(self._var_per_level_adjusted[level], self._var_per_level_adjusted[level-1]/(self._model.m**beta))
+        for level in range(self._Lmin+1, self._Lmax+1):
+            if self._var_per_level_adjusted[level-self._Lmin] > self._var_per_level_adjusted[level-self._Lmin-1]:
+                self._var_per_level_adjusted[level-self._Lmin] = self._var_per_level_adjusted[level-self._Lmin-1]/(0.5*self._model.m**beta)
+        for level in range(self._Lmin+1, self._Lmax+1):
+            self._est_per_level_adjusted[level-self._Lmin] = max(self._est_per_level_adjusted[level-self._Lmin], self._est_per_level_adjusted[level-self._Lmin-1]/(self._model.m**alpha))
+            self._var_per_level_adjusted[level-self._Lmin] = max(self._var_per_level_adjusted[level-self._Lmin], self._var_per_level_adjusted[level-self._Lmin-1]/(self._model.m**beta))
 
     @property
     def nsamp_per_level(self):
@@ -123,6 +124,10 @@ class MLMCNonAdaptiveEstimator(MLMCNonAdaptiveEstimatorBase):
     @property
     def estimate(self):
         return self._estimate
+    
+    @property
+    def nsamp_per_level(self):
+        return self._nsamp_per_level
 
 
 class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
@@ -140,4 +145,7 @@ class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
             var_extrapolated = estimator.var_per_level_adjusted[-1]/(self._model.m**self._beta)
             cost_extrapolated = estimator.cost_per_level_per_sample[-1]*(self._model.m**self._gamma)
             nsamp_new.append(max(np.ceil(const_*np.sqrt(var_extrapolated/cost_extrapolated)), self._min_nsamp))
+        for i in range(1, len(nsamp_new)):
+            if nsamp_new[i] > nsamp_new[i - 1]:
+                logging.warning(f"Possibly erratic number of samples: {nsamp_new}")
         return MLMCNonAdaptiveEstimator(self._sample, self._model, np.array(nsamp_new), self._Lmin)
