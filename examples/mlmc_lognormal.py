@@ -42,7 +42,7 @@ class LognormalPDEModel(ModelBase):
     def evaluate(self, level, sample) -> ModelEvaluationBase:
         hl = self.get_hl(level)
         a, L, bc = PDE.setup_fenics_problem(hl, sample, self._decay_rate_q)
-        problem = LinearProblem(a, L, bcs=[bc], petsc_options=self._get_petsc_options(), jit_options={"timeout": 300})
+        problem = LinearProblem(a, L, bcs=[bc], petsc_options=self._get_petsc_options(), jit_options={"timeout": 60})
         uh = problem.solve()
         qoi = self._get_qoi_from_solution(uh, level)
         evaluation_cost = self._get_eval_cost(level)
@@ -61,7 +61,7 @@ class LognormalPDEModel(ModelBase):
 
     def _get_eval_cost(self, level):
         matrix_order = ((1/self.get_hl(level))-1)**2
-        return matrix_order**(3/2)
+        return matrix_order
     
     @property
     def m(self):

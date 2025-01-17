@@ -71,7 +71,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         self._beta = beta
         self._gamma = approximate_gamma
         self._r = 0.7
-        self._min_nsamp = 2
+        self._min_nsamp = 1
         self._reset_results()
 
     def _reset_results(self):

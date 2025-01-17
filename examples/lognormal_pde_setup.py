@@ -13,7 +13,7 @@ class PDEwLognormalRandomCoeff():
     def get_mesh(hl):
         num_el = int(np.round(1/hl))
         msh = mesh.create_rectangle(
-                comm=MPI.COMM_WORLD,
+                comm=MPI.COMM_SELF,
                 points=((0.0, 0.0), (1.0, 1.0)),
                 n=(num_el, num_el),
                 cell_type=mesh.CellType.triangle,
