@@ -101,7 +101,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
     def final_estimator(self):
         return self._final_estimator
 
-    def run(self, mse_tol, init_nsamp=10):
+    def run(self, mse_tol, init_nsamp=50):
         self._reset_results()
         cur_max_level = self._Lmin + 1
         cur_ml_estimator = self._setup_nonadaptive_ml_estimator(init_nsamp, cur_max_level)
