@@ -106,3 +106,33 @@ def clear_fenics_cache():
     fenics_cache = os.path.expanduser("~/.cache/fenics")
     if os.path.exists(fenics_cache):
         shutil.rmtree(fenics_cache)
+
+
+def export_conda_environment(output_folder, output_file_name="environment.yml"):
+    """
+    Exports the current Conda environment into a .yml file.
+
+    Parameters:
+    output_file (str): The name of the file where the environment will be exported. Default is "environment.yml".
+
+    Raises:
+    RuntimeError: If the export process fails.
+    """
+    output_file = os.path.join(output_folder, output_file_name)
+    try:
+        # Get the name of the current Conda environment
+        env_name = os.environ.get("CONDA_DEFAULT_ENV")
+        if not env_name:
+            raise RuntimeError("No active Conda environment found. Activate an environment before exporting.")
+
+        # Construct the command to export the environment
+        command = ["conda", "env", "export", "--name", env_name, "--file", output_file]
+        
+        # Run the command
+        subprocess.run(command, check=True)
+        logging.debug(f"Environment '{env_name}' successfully exported to {output_file}")
+    
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to export the Conda environment: {e}")
+    except Exception as e:
+        raise RuntimeError(f"An unexpected error occurred: {e}")

@@ -3,15 +3,14 @@ from estimator.mlmc_estimator import MLMCAdaptiveEstimator as adapt_alg
 import numpy as np
 import logging
 import time
-import os
-from utils.utils import get_git_commit_hash, save_commit_hash, copy_settings_to_output, addLoggingLevel, clear_fenics_cache
+from utils.utils import get_git_commit_hash, save_commit_hash, copy_settings_to_output, addLoggingLevel, clear_fenics_cache, export_conda_environment
 from concurrent.futures import ProcessPoolExecutor
 import functools
 
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
-random_seed = 26
+random_seed = 2305 #Change for different method testing!!!
 logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = LognormalPDEModel()
@@ -22,26 +21,27 @@ beta = 4
 approximate_gamma = 3
 
 # Initialize the MLMC algorithm
-mse_tol_array = [2e-6]
-num_runs = 50
+mse_tol_array = [4e-6, 2e-6]
+num_runs_per_tolerance = 5
 num_workers = 10
 
 # Number of times to run the simulation
 output_folder = "data/"
-main_file = "run_estim_statistics.py"
+this_file = "run_estim_statistics_parallel.py"
 settings_folder = "examples/"
 
 
 git_commit = get_git_commit_hash()
-copy_settings_to_output(output_folder=output_folder, settings_folder=settings_folder, main_file=main_file)
+copy_settings_to_output(output_folder=output_folder, settings_folder=settings_folder, main_file=this_file)
 save_commit_hash(output_folder, git_commit)
+export_conda_environment(output_folder=output_folder)
 
 
-def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, approximate_gamma):
+def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, approximate_gamma, mse_tol_id):
     """
-    Function to run a single simulation. This will be executed in parallel.
+    Function to run a single simulation. run_simulation will be executed in parallel.
     """
-    rng = np.random.default_rng(seed=random_seed + run_id)
+    rng = np.random.default_rng(seed=random_seed + run_id + mse_tol_id)
     sample = LognormalPDESample(rng=rng)
     try:
         logging.debug(f"Starting simulation run {run_id}")
@@ -94,8 +94,8 @@ for mse_tol in mse_tol_array:
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         results = list(executor.map(
             functools.partial(run_simulation, mse_tol=mse_tol, model=model, 
-                              Lmin=Lmin, Lmax=Lmax, alpha=alpha, beta=beta, approximate_gamma=approximate_gamma),
-            range(1, num_runs + 1)
+                              Lmin=Lmin, Lmax=Lmax, alpha=alpha, beta=beta, approximate_gamma=approximate_gamma, mse_tol_id=mse_tol_array.index(mse_tol)),
+            range(1, num_runs_per_tolerance + 1)
         ))
 
     # Process the results after parallel execution
@@ -117,6 +117,6 @@ for mse_tol in mse_tol_array:
     logging.debug(f"Results saved to {simulation_data_file}.\n")
 
     end_time_tol = time.time()
-    logging.info(f"Total runtime for tolerance {mse_tol}: {end_time_tol - start_time_tol}")
+    logging.info(f"Total runtime for tolerance {mse_tol}: {end_time_tol - start_time_tol}\n")
 
 logging.info(f"All simulations completed and final results saved to {simulation_data_file}.")
