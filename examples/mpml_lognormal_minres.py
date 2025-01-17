@@ -23,9 +23,9 @@ class MPLognormalPDEModelMinres(MPMLModel, LognormalPDEModel):
 
         x, num_it, conv_reason, flops_performed = minres.solve_system(A=A, b=b, rtol=comp_tol)
 
-        logging.debug(f'Iteration number on level {level} is {num_it}')
-        logging.debug(f'Convergence reason: {conv_reason}')
-        logging.debug(f'Number of flops per iteration: {flops_performed/num_it}\n')
+        logging.trace(f'Iteration number on level {level} is {num_it}')
+        logging.trace(f'Convergence reason: {conv_reason}')
+        logging.trace(f'Number of flops per iteration: {flops_performed/num_it}\n')
        
         msh = PDE.get_mesh(hl)
         uh = Function(functionspace(msh, ("Lagrange", 1)))

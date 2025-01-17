@@ -27,8 +27,8 @@ class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
         itref_l = self._get_itref(hl)
         x, num_it, rel_res = itref_l.solve_system(A=self._csr_mat_to_ndarray(A), b=self._vec_to_ndarray(b), rtol=comp_tol)
 
-        logging.debug(f'Itref iteration number on level {level} is {num_it}')
-        logging.debug(f'Relative residual norms: {rel_res}\n')
+        logging.trace(f'Itref iteration number on level {level} is {num_it}')
+        logging.trace(f'Relative residual norms: {rel_res}\n')
         if rel_res[-1] > comp_tol:
             logging.warning(f'Itref not converged within given max number of iterations. Rel. residual: {rel_res[-1]}. Tolerance: {comp_tol}.\n')
        

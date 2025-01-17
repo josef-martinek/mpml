@@ -44,11 +44,11 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
         pass
 
     def run(self, *args, **kwargs):
-        logging.info(f'ML estimator nsamp: {self.nsamp_per_level}')
+        logging.debug(f'ML estimator nsamp: {self.nsamp_per_level}')
         start_time = time.time()
         self._run_impl(*args, **kwargs)
         end_time = time.time()
-        logging.info(f'ML estimator runtime: {end_time - start_time}')
+        logging.debug(f'ML estimator runtime: {end_time - start_time}')
 
     @abstractmethod
     def _run_impl(self):
@@ -110,7 +110,6 @@ class MLMCAdaptiveEstimatorBase(ABC):
             cur_ml_estimator.adjust_estimates_and_variances(self._alpha, self._beta)
             new_max_level, conv_success = self._conv_check(cur_max_level, cur_ml_estimator, mse_tol)
             if conv_success:
-                logging.info('Convergence successful')
                 self._conv_success = True
                 self._save_results(cur_ml_estimator, cur_max_level)
                 return
