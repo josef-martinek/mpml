@@ -7,13 +7,14 @@ from examples.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
 
 class LognormalPDESample(SampleBase):
 
-    def __init__(self):
+    def __init__(self, rng: np.random.Generator):
         self._s = 4
         #self._std = np.sqrt(1.4)
         self._std = 2
+        self._rng = rng
 
     def draw(self):
-        return self._std*np.random.normal(0, 1, self._s)
+        return self._std*self._rng.standard_normal(self._s)
     
 
 class LognormalPDEEvaluation(ModelEvaluationBase):
