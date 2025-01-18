@@ -158,7 +158,7 @@ class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
     def _setup_nonadaptive_ml_estimator(self, nsamp, max_level) -> MLMCNonAdaptiveEstimator:
         return MLMCNonAdaptiveEstimator(self._sample, self._model, nsamp*np.ones(max_level-self._Lmin+1), self._Lmin)
     
-    def _update_nonadaptive_ml_estimator(self, estimator: MLMCNonAdaptiveEstimator, new_max_level, mse_tol, init_nsamp) -> MLMCNonAdaptiveEstimator:
+    def _update_nonadaptive_ml_estimator(self, estimator: MLMCNonAdaptiveEstimator, new_max_level, mse_tol) -> MLMCNonAdaptiveEstimator:
         nsamp_old = deepcopy(estimator.nsamp_per_level)
         precomputed_samples = []
         precomputed_samples_cost = estimator.cost_per_level_per_sample

@@ -28,8 +28,8 @@ class MPMLAdaptiveEstimator(MLMCAdaptiveEstimator):
     def _setup_nonadaptive_ml_estimator(self, nsamp, max_level) -> MPMLNonAdaptiveEstimator:
         return MPMLNonAdaptiveEstimator(self._sample, self._model, nsamp*np.ones(max_level-self._Lmin+1), self._Lmin, self._get_comp_tol(max_level))
     
-    def _update_nonadaptive_ml_estimator(self, estimator, new_max_level, mse_tol, init_nsamp):
-        aux = super()._update_nonadaptive_ml_estimator(estimator, new_max_level, mse_tol, init_nsamp)
+    def _update_nonadaptive_ml_estimator(self, estimator, new_max_level, mse_tol):
+        aux = super()._update_nonadaptive_ml_estimator(estimator, new_max_level, mse_tol)
         comp_tol = self._get_comp_tol(new_max_level)
         return MPMLNonAdaptiveEstimator(self._sample, self._model, aux.nsamp_per_level, self._Lmin, comp_tol)
     

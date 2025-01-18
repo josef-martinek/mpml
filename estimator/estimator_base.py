@@ -114,7 +114,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
                 self._save_results(cur_ml_estimator, cur_max_level)
                 return
             if new_max_level <= self._Lmax: 
-                cur_ml_estimator = self._update_nonadaptive_ml_estimator(cur_ml_estimator, new_max_level, mse_tol, init_nsamp)
+                cur_ml_estimator = self._update_nonadaptive_ml_estimator(cur_ml_estimator, new_max_level, mse_tol)
             cur_max_level = new_max_level
         self._conv_success = False
         if cur_max_level > self._Lmax:
