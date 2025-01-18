@@ -22,8 +22,8 @@ beta = 4
 approximate_gamma = 3
 
 # Initialize the MLMC algorithm
-mse_tol_array = [1e-6, 5e-7]
-num_runs = 2
+mse_tol_array = [1e-7]
+num_runs = 10
 
 # Number of times to run the simulation
 output_folder = "data/"

@@ -21,7 +21,7 @@ beta = 4
 approximate_gamma = 3
 
 # Initialize the MLMC algorithm
-mse_tol_array = [4e-6, 2e-6]
+mse_tol_array = [8e-6]
 num_runs_per_tolerance = 5
 num_workers = 10
 

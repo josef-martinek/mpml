@@ -15,7 +15,7 @@ def get_git_commit_hash():
 
 def save_commit_hash(folder, git_commit):
     os.makedirs(folder, exist_ok=True)
-    git_commit_file = folder + "git_commit.txt"
+    git_commit_file = os.path.join(folder, "git_commit.txt")
     with open(git_commit_file, "w") as f:
         f.write(git_commit)
 

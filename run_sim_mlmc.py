@@ -3,14 +3,19 @@ from estimator.mlmc_estimator import MLMCAdaptiveEstimator
 import numpy as np
 import logging
 import time
+from utils.utils import addLoggingLevel, clear_fenics_cache
 
-np.random.seed(22)
+addLoggingLevel('TRACE', logging.DEBUG - 5)
+clear_fenics_cache()
+
+rng = np.random.default_rng(seed=20)
+
 logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
 
-sample = LognormalPDESample()
+sample = LognormalPDESample(rng=rng)
 model = LognormalPDEModel()
 
-algorithm = MLMCAdaptiveEstimator(sample, model, Lmin=0, Lmax=5, alpha=2, beta=4, approximate_gamma=3)
+algorithm = MLMCAdaptiveEstimator(sample, model, Lmin=1, Lmax=5, alpha=2, beta=4)
 
 start_time = time.time()
 algorithm.run(mse_tol=8e-6)

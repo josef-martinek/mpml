@@ -4,21 +4,25 @@ from estimator.mpml_estimator import MPMLAdaptiveEstimator
 import numpy as np
 import logging
 import time
+from utils.utils import addLoggingLevel, clear_fenics_cache
 
-np.random.seed(22)
-logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
+addLoggingLevel('TRACE', logging.DEBUG - 5)
+clear_fenics_cache()
 
-sample = LognormalPDESample()
+rng = np.random.default_rng(seed=20)
+logging.basicConfig(level=logging.TRACE, format='{levelname}: {message}', style='{')
+
+sample = LognormalPDESample(rng=rng)
 model = MPLognormalPDEModelItref()
 
-estimator = MPMLAdaptiveEstimator(sample, model, Lmin=0, Lmax=5, alpha=2, beta=4, approximate_gamma=3, k_p=0.1, alpha_tol=1, beta_tol=2)
+algorithm = MPMLAdaptiveEstimator(sample, model, Lmin=1, Lmax=5, alpha=2, beta=4, k_p=0.1, alpha_tol=1, beta_tol=2)
 
 start_time = time.time()
-estimator.run(mse_tol=2e-6)
+algorithm.run(mse_tol=8e-6)
 end_time = time.time()
+estimator = algorithm.final_estimator
 
 logging.info(f'Total runtime: {end_time - start_time}')
 logging.info(f'Estimated QOI: {estimator.estimate}')
 logging.info(f'Final numer of samples per level: {estimator.nsamp_per_level}')
-logging.info(f'Max level used: {estimator.max_level_used}')
 logging.info(f'Computational error tolerance per level: {estimator.final_estimator.comp_tol_per_level}')

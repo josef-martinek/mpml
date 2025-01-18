@@ -38,7 +38,7 @@ class itref(LinsorverBase):
             rel_res.append(np.linalg.norm(r)/np.linalg.norm(b))
 
             if (np.linalg.norm(r)/np.linalg.norm(b)) < rtol:
-                return x, i, rel_res
+                return x.astype(np.double), i, np.array(rel_res).astype(np.double)
 
             # Step 2: Convert residual to half precision
             r = r.astype(self._eps_s)
@@ -50,7 +50,7 @@ class itref(LinsorverBase):
             x_update = x_update.astype(self._eps)
             x = x.astype(self._eps) + x_update.astype(self._eps)
 
-        return x
+        return x.astype(np.double), i, np.array(rel_res).astype(np.double)
     
     @staticmethod
     def forward_substitution(L, b):
