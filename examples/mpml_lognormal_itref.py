@@ -59,6 +59,6 @@ class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
         elif np.allclose(hl, 1/8):
             return itref(np.half, np.half, np.single, np.single)
         elif np.allclose(hl, 1/16):
-            return itref(np.half, np.half, np.single, np.single)
+            return itref(np.single, np.single, np.single, np.single)
         else:
             return itref(np.single, np.single, np.double, np.double)
