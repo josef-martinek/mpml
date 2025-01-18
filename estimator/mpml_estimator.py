@@ -19,8 +19,8 @@ class MPMLNonAdaptiveEstimator(MLMCNonAdaptiveEstimator):
 
 class MPMLAdaptiveEstimator(MLMCAdaptiveEstimator):
 
-    def __init__(self, sample, model: MPMLModel, Lmin, Lmax, alpha, beta, approximate_gamma, alpha_tol, beta_tol, k_p=0.1):
-        super().__init__(sample, model, Lmin, Lmax, alpha, beta, approximate_gamma)
+    def __init__(self, sample, model: MPMLModel, Lmin, Lmax, alpha, beta, alpha_tol, beta_tol, k_p=0.1):
+        super().__init__(sample, model, Lmin, Lmax, alpha, beta)
         self._k_p = k_p
         self._alpha_tol = alpha_tol
         self._beta_tol = beta_tol

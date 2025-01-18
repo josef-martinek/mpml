@@ -170,7 +170,7 @@ class MLMCAdaptiveEstimator(MLMCAdaptiveEstimatorBase):
             precomputed_samples.append(old_samples[:min(int(nsamp_new[i]), len(old_samples))])
         if new_max_level > estimator._Lmax:
             var_extrapolated = estimator.var_per_level_adjusted[-1]/(self._model.m**self._beta)
-            cost_extrapolated = estimator.cost_per_level_per_sample[-1]*(self._model.m**self._gamma)
+            cost_extrapolated = estimator.cost_per_level_per_sample[-1]*(self._model.m**self._cost_extrapol_const)
             nsamp_new.append(max(np.ceil(const_*np.sqrt(var_extrapolated/cost_extrapolated)), self._min_nsamp))
             precomputed_samples.append(np.array([]))
             precomputed_samples_cost.append(0)

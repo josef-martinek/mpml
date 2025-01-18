@@ -60,7 +60,7 @@ class MLMCNonAdaptiveEstimatorBase(ABC):
 
 
 class MLMCAdaptiveEstimatorBase(ABC):
-    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta, approximate_gamma):
+    def __init__(self, sample: SampleBase, model: ModelBase, Lmin, Lmax, alpha, beta):
         self._sample = sample
         self._model = model
         if Lmin >= Lmax:
@@ -69,7 +69,7 @@ class MLMCAdaptiveEstimatorBase(ABC):
         self._Lmax = Lmax
         self._alpha = alpha
         self._beta = beta
-        self._gamma = approximate_gamma
+        self._cost_extrapol_const = 3
         self._r = 0.7
         self._min_nsamp = 1
         self._reset_results()
