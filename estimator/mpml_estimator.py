@@ -5,8 +5,8 @@ from model.model_base import MPMLModel
 
 class MPMLNonAdaptiveEstimator(MLMCNonAdaptiveEstimator):
 
-    def __init__(self, sample, model: MPMLModel, nsamp_per_level, Lmin, comp_tol_per_level):
-        super().__init__(sample, model, nsamp_per_level, Lmin)
+    def __init__(self, sample, model: MPMLModel, nsamp_per_level, Lmin, comp_tol_per_level, mc_diff_per_level = None, precomputed_samples_cost = None):
+        super().__init__(sample, model, nsamp_per_level, Lmin, mc_diff_per_level, precomputed_samples_cost)
         self._comp_tol_per_level = comp_tol_per_level
 
     def _evaluate_model(self, level, sample):
@@ -31,7 +31,13 @@ class MPMLAdaptiveEstimator(MLMCAdaptiveEstimator):
     def _update_nonadaptive_ml_estimator(self, estimator, new_max_level, mse_tol):
         aux = super()._update_nonadaptive_ml_estimator(estimator, new_max_level, mse_tol)
         comp_tol = self._get_comp_tol(new_max_level)
-        return MPMLNonAdaptiveEstimator(self._sample, self._model, aux.nsamp_per_level, self._Lmin, comp_tol)
+        return MPMLNonAdaptiveEstimator(sample=self._sample, 
+                                        model=self._model, 
+                                        nsamp_per_level=aux.nsamp_per_level, 
+                                        Lmin=self._Lmin, 
+                                        mc_diff_per_level=aux._mc_differences_per_level,
+                                        precomputed_samples_cost=aux._precomputed_samples_cost,
+                                        comp_tol_per_level=comp_tol)
     
     def _get_comp_tol(self, cur_max_level):
         comp_tol = np.zeros(cur_max_level-self._Lmin+1)
