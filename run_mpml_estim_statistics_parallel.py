@@ -1,5 +1,6 @@
-from examples.mlmc_lognormal import LognormalPDESample, LognormalPDEModel
-from estimator.mlmc_estimator import MLMCAdaptiveEstimator as adapt_alg
+from examples.mlmc_lognormal import LognormalPDESample
+from examples.mpml_lognormal_minres import MPLognormalPDEModelMinres as model_cls
+from estimator.mpml_estimator import MPMLAdaptiveEstimator as adapt_alg
 import numpy as np
 import logging
 import time
@@ -10,15 +11,17 @@ import functools
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
-random_seed = 2305 #Change for different method testing!!!
-logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
+random_seed = 206 #Change for different method testing!!!
+logging.basicConfig(level=logging.TRACE, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
-model = LognormalPDEModel()
+model = model_cls()
 Lmin = 1
 Lmax = 6
 alpha = 2
 beta = 4
-approximate_gamma = 3
+alpha_tol = 1
+beta_tol = 2
+k_p = 0.05
 
 # Initialize the MLMC algorithm
 mse_tol_array = [8e-6]
@@ -27,7 +30,7 @@ num_workers = 10
 
 # Number of times to run the simulation
 output_folder = "data/"
-this_file = "run_estim_statistics_parallel.py"
+this_file = "run_mpml_estim_statistics_parallel.py"
 settings_folder = "examples/"
 
 
@@ -37,7 +40,7 @@ save_commit_hash(output_folder, git_commit)
 export_conda_environment(output_folder=output_folder)
 
 
-def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, approximate_gamma, mse_tol_id):
+def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, alpha_tol, beta_tol, k_p, mse_tol_id):
     """
     Function to run a single simulation. run_simulation will be executed in parallel.
     """
@@ -49,7 +52,9 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, approximate_
             sample, model,
             Lmin=Lmin, Lmax=Lmax,
             alpha=alpha, beta=beta,
-            approximate_gamma=approximate_gamma
+            alpha_tol=alpha_tol,
+            beta_tol=beta_tol,
+            k_p=k_p
         )
         # Measure runtime
         start_time = time.time()
@@ -94,7 +99,7 @@ for mse_tol in mse_tol_array:
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         results = list(executor.map(
             functools.partial(run_simulation, mse_tol=mse_tol, model=model, 
-                              Lmin=Lmin, Lmax=Lmax, alpha=alpha, beta=beta, approximate_gamma=approximate_gamma, mse_tol_id=mse_tol_array.index(mse_tol)),
+                              Lmin=Lmin, Lmax=Lmax, alpha=alpha, beta=beta, alpha_tol=alpha_tol, beta_tol=beta_tol, k_p=k_p, mse_tol_id=mse_tol_array.index(mse_tol)),
             range(1, num_runs_per_tolerance + 1)
         ))
 
