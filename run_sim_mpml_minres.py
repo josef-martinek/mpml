@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.TRACE, format='{levelname}: {message}', style=
 sample = LognormalPDESample(rng=rng)
 model = MPLognormalPDEModelMinres()
 
-algorithm = MPMLAdaptiveEstimator(sample, model, Lmin=1, Lmax=5, alpha=2, beta=4, k_p=0.1, alpha_tol=1, beta_tol=2)
+algorithm = MPMLAdaptiveEstimator(sample, model, Lmin=1, Lmax=5, alpha=2, beta=4, k_p=0.05, alpha_tol=1, beta_tol=2)
 
 start_time = time.time()
 algorithm.run(mse_tol=4e-6)

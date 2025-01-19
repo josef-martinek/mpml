@@ -9,7 +9,6 @@ class LognormalPDESample(SampleBase):
 
     def __init__(self, rng: np.random.Generator):
         self._s = 4
-        #self._std = np.sqrt(1.4)
         self._std = 2
         self._rng = rng
 

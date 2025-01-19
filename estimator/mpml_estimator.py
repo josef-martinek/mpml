@@ -19,7 +19,7 @@ class MPMLNonAdaptiveEstimator(MLMCNonAdaptiveEstimator):
 
 class MPMLAdaptiveEstimator(MLMCAdaptiveEstimator):
 
-    def __init__(self, sample, model: MPMLModel, Lmin, Lmax, alpha, beta, alpha_tol, beta_tol, k_p=0.1):
+    def __init__(self, sample, model: MPMLModel, Lmin, Lmax, alpha, beta, alpha_tol, beta_tol, k_p=0.05):
         super().__init__(sample, model, Lmin, Lmax, alpha, beta)
         self._k_p = k_p
         self._alpha_tol = alpha_tol
@@ -42,7 +42,7 @@ class MPMLAdaptiveEstimator(MLMCAdaptiveEstimator):
     def _get_comp_tol(self, cur_max_level):
         comp_tol = np.zeros(cur_max_level-self._Lmin+1)
         for i in range(self._Lmin, cur_max_level):
-            comp_tol[i-self._Lmin] = ((self._k_p/2)*(self._model.get_hl(i)**self._beta))**(1/self._beta_tol)
-        comp_tol[cur_max_level-self._Lmin] = min(((self._k_p/2)*(self._model.get_hl(cur_max_level)**self._beta))**(1/self._beta_tol),
-                                                 ((self._k_p/2)*(self._model.get_hl(cur_max_level)**self._alpha))**(1/self._alpha_tol))
+            comp_tol[i-self._Lmin] = ((self._k_p)*(self._model.get_hl(i)**self._beta))**(1/self._beta_tol)
+        comp_tol[cur_max_level-self._Lmin] = min(((self._k_p)*(self._model.get_hl(cur_max_level)**self._beta))**(1/self._beta_tol),
+                                                 ((self._k_p)*(self._model.get_hl(cur_max_level)**self._alpha))**(1/self._alpha_tol))
         return comp_tol
