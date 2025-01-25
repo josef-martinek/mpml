@@ -8,9 +8,9 @@ from utils.utils import addLoggingLevel, clear_fenics_cache
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 clear_fenics_cache()
 
-rng = np.random.default_rng(seed=20)
+rng = np.random.default_rng(seed=200)
 
-logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
+logging.basicConfig(level=logging.DEBUG, format='{levelname}: {message}', style='{')
 
 sample = LognormalPDESample(rng=rng)
 model = LognormalPDEModel()
@@ -18,7 +18,7 @@ model = LognormalPDEModel()
 algorithm = MLMCAdaptiveEstimator(sample, model, Lmin=1, Lmax=5, alpha=2, beta=4)
 
 start_time = time.time()
-algorithm.run(mse_tol=8e-6)
+algorithm.run(mse_tol=2e-6)
 end_time = time.time()
 estimator = algorithm.final_estimator
 
