@@ -1,5 +1,5 @@
 from examples.mlmc_lognormal import LognormalPDESample
-from examples.mlmc_lognormal_minres_fixtol import MLLognormalPDEModelMinres as model_cls
+from examples.mlmc_lognormal import LognormalPDEModel as model_cls
 from estimator.mlmc_estimator import MLMCAdaptiveEstimator as adapt_alg
 import numpy as np
 import logging
@@ -11,22 +11,22 @@ import functools
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
-random_seed = 2305 #Change for different method testing!!!
-logging.basicConfig(level=logging.TRACE, format='{levelname}: {message}', style='{')
+random_seed = 1 #Change for different method testing!!!
+logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = model_cls()
 Lmin = 1
-Lmax = 6
+Lmax = 10
 alpha = 2
 beta = 4
 
 # Initialize the MLMC algorithm
-mse_tol_array = [8e-6]
-num_runs_per_tolerance = 5
+mse_tol_array = [1.6e-5]
+num_runs_per_tolerance = 50
 num_workers = 10
 
 # Number of times to run the simulation
-output_folder = "data/"
+output_folder = "data/test/"
 this_file = "run_mlmc_estim_statistics_parallel.py"
 settings_folder = "examples/"
 
@@ -52,7 +52,7 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, mse_tol_id):
         )
         # Measure runtime
         start_time = time.time()
-        algorithm.run(mse_tol=mse_tol, init_nsamp=50)
+        algorithm.run(mse_tol=mse_tol, init_nsamp=20)
         end_time = time.time()
 
         # Get the final estimator
