@@ -125,19 +125,40 @@ def plot_total_mean_cost_vs_tolerance(tolerances, method1_costs, method2_costs, 
     method1_label (str): Label for method 1.
     method2_label (str): Label for method 2.
     """
-    plt.figure(figsize=(10, 6))
-    plt.loglog(tolerances, method1_costs, marker="o", label=method1_label)
-    plt.loglog(tolerances, method2_costs, marker="s", label=method2_label)
+    # Define consistent style settings
+    fontsize = 16
+    markersize = 16
+    linewidth = 1.5
 
-    plt.xlabel("MSE Tolerance")
-    plt.ylabel("Total Mean Cost")
-    plt.title("Total Mean Cost vs MSE Tolerance")
-    plt.legend()
+    # Adjusted figure
+    plt.figure(figsize=(8, 6))
+
+    # Plot method 1
+    plt.loglog(tolerances, method1_costs, marker="v", linestyle="--", label=method1_label, 
+               markersize=markersize, linewidth=linewidth)
+    
+    # Plot method 2
+    plt.loglog(tolerances, method2_costs, marker="o", linestyle="--", label=method2_label, 
+               markersize=markersize, linewidth=linewidth)
+
+    # Adjust labels, title, and legend
+    plt.xlabel("MSE Tolerance", fontsize=fontsize)
+    #plt.ylabel("Total Mean Cost", fontsize=fontsize)
+    #plt.title("Total Mean Cost vs MSE Tolerance", fontsize=fontsize)
+    plt.legend(fontsize=fontsize, loc="upper right")
+
+    # Adjust ticks and grid
+    plt.xticks(fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
     plt.grid(True, which="both", linestyle="--")
+
+    # Adjust layout and save as PDF
     plt.tight_layout()
+    plt.savefig("total_mean_cost_vs_tolerance.pdf", format="pdf", bbox_inches="tight", dpi=300)
 
     # Show the plot
     plt.show()
+
 
 def compute_mean_squared_error(estimates, reference):
     """
@@ -220,33 +241,49 @@ def plot_mse_with_confidence_intervals(tolerances, method1_results, method2_resu
     method1_label (str): Label for method 1.
     method2_label (str): Label for method 2.
     """
-    plt.figure(figsize=(10, 6))
+    # Define consistent style settings
+    fontsize = 16
+    markersize = 16
+    linewidth = 1.5
+
+    # Adjusted figure
+    plt.figure(figsize=(8, 6))
 
     # Unpack MSE and confidence intervals for plotting
     method1_mse, method1_lower, method1_upper = zip(*method1_results)
     method2_mse, method2_lower, method2_upper = zip(*method2_results)
 
     # Plot method 1
-    plt.errorbar(tolerances, method1_mse, 
-                 yerr=[np.array(method1_mse) - np.array(method1_lower), 
-                       np.array(method1_upper) - np.array(method1_mse)], 
-                 fmt="o-", label=method1_label, capsize=5)
+    plt.errorbar(tolerances, method1_mse,
+                yerr=[np.array(method1_mse) - np.array(method1_lower),
+                    np.array(method1_upper) - np.array(method1_mse)],
+                fmt="v--", label=method1_label, capsize=5, markersize=markersize, linewidth=linewidth)
 
     # Plot method 2
-    plt.errorbar(tolerances, method2_mse, 
-                 yerr=[np.array(method2_mse) - np.array(method2_lower), 
-                       np.array(method2_upper) - np.array(method2_mse)], 
-                 fmt="s-", label=method2_label, capsize=5)
-    plt.loglog(tolerances, tolerances, marker="x", label="mse tol")
+    plt.errorbar(tolerances, method2_mse,
+                yerr=[np.array(method2_mse) - np.array(method2_lower),
+                    np.array(method2_upper) - np.array(method2_mse)],
+                fmt="o--", label=method2_label, capsize=5, markersize=markersize, linewidth=linewidth)
 
+    # Add mse tolerance line
+    plt.loglog(tolerances, tolerances, marker="x", label="MSE Tolerance", linewidth=linewidth, markersize=markersize)
+
+    # Adjust labels, title, and legend
     plt.xscale("log")
     plt.yscale("log")
-    plt.xlabel("MSE Tolerance")
-    plt.ylabel("Mean Squared Error (MSE)")
-    plt.title("Mean Squared Error vs Tolerances with 95% Confidence Intervals")
-    plt.legend()
+    plt.xlabel("MSE Tolerance", fontsize=fontsize)
+    #plt.ylabel("Mean Squared Error (MSE)", fontsize=fontsize)
+    #plt.title("Mean Squared Error vs Tolerances with 95% Confidence Intervals", fontsize=fontsize)
+    plt.legend(fontsize=fontsize, loc="upper left")
+
+    # Adjust ticks and grid
+    plt.xticks(fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
     plt.grid(True, which="both", linestyle="--")
+
+    # Adjust layout and save as PDF
     plt.tight_layout()
+    plt.savefig("mse_with_confidence_intervals.pdf", format="pdf", bbox_inches="tight", dpi=300)
 
     # Show the plot
     plt.show()
@@ -299,21 +336,30 @@ def plot_samples_single_tolerance(method1_samples, method2_samples, method1_labe
     for a single error tolerance.
 
     Parameters:
-    levels (ndarray): Array of levels.
     method1_samples (list of ndarray): Number of samples per level for Method 1.
     method2_samples (list of ndarray): Number of samples per level for Method 2.
     method1_label (str): Label for Method 1.
     method2_label (str): Label for Method 2.
     """
-    levels = np.arange(min(max(len(nsamp) for nsamp in method1_samples),
-                           max(len(nsamp) for nsamp in method2_samples)))
-    # Compute confidence intervals for Method 1
-    method1_means, method1_lowers, method1_uppers = compute_confidence_interval(method1_samples)
+    # Compute levels based on the lengths of sample arrays
+    levels = np.arange(min(
+        max(len(nsamp) for nsamp in method1_samples),
+        max(len(nsamp) for nsamp in method2_samples)
+    ))
 
+    # Compute confidence intervals for both methods
+    method1_means, method1_lowers, method1_uppers = compute_confidence_interval(method1_samples)
     method2_means, method2_lowers, method2_uppers = compute_confidence_interval(method2_samples)
 
-    # Plot
+    # Plot settings
+    fontsize = 16
+    markersize = 12
+    linewidth = 1.5
+
+    # Create the figure
     plt.figure(figsize=(8, 6))
+
+    # Plot Method 1 with error bars
     plt.errorbar(
         levels,
         method1_means[levels],
@@ -321,11 +367,15 @@ def plot_samples_single_tolerance(method1_samples, method2_samples, method1_labe
             np.array(method1_means[levels]) - np.array(method1_lowers[levels]),
             np.array(method1_uppers[levels]) - np.array(method1_means[levels]),
         ],
-        fmt="o-",
+        fmt="o--",
         label=method1_label,
         capsize=5,
         color="blue",
+        markersize=markersize,
+        linewidth=linewidth,
     )
+
+    # Plot Method 2 with error bars
     plt.errorbar(
         levels,
         method2_means[levels],
@@ -333,18 +383,115 @@ def plot_samples_single_tolerance(method1_samples, method2_samples, method1_labe
             np.array(method2_means[levels]) - np.array(method2_lowers[levels]),
             np.array(method2_uppers[levels]) - np.array(method2_means[levels]),
         ],
-        fmt="s-",
+        fmt="v--",
         label=method2_label,
         capsize=5,
         color="red",
+        markersize=markersize,
+        linewidth=linewidth,
     )
 
+    # Set x-axis and y-axis scale
     plt.xscale("linear")
     plt.yscale("log")
-    plt.xlabel("Level")
-    plt.ylabel("Average Number of Samples")
-    plt.title("Average Number of Samples per Level with 95% Confidence Interval")
-    plt.legend()
-    plt.grid(True, linestyle="--")
+
+    # Axis labels and title
+    plt.xlabel("Level", fontsize=fontsize)
+    plt.ylabel("Average Number of Samples", fontsize=fontsize)
+    #plt.title("Average Number of Samples per Level with 95% Confidence Interval", fontsize=fontsize)
+
+    # Legend and grid
+    plt.legend(fontsize=fontsize, loc="best")
+    plt.grid(True, linestyle="--", which="both")
+
+    # Ticks
+    plt.xticks(levels, fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
+
+    # Adjust layout and save as PDF
     plt.tight_layout()
+    plt.savefig("average_samples_per_level.pdf", format="pdf", bbox_inches="tight", dpi=300)
+
+    # Show the plot
     plt.show()
+
+
+
+def plot_mse_with_confidence_intervals_var_kp(method1_results, method1_label):
+    """
+    Plots the mean squared error (MSE) with 95% confidence intervals vs k_p values.
+
+    Parameters:
+    method1_results (list of tuple): List of (mse, lower_bound, upper_bound) for method 1.
+    method1_label (str): Label for method 1.
+    """
+    # Define consistent style settings
+    fontsize = 16
+    markersize = 16
+    linewidth = 1.5
+
+    # Adjusted figure
+    plt.figure(figsize=(8, 6))
+
+    # Unpack MSE and confidence intervals for plotting
+    method1_mse, method1_lower, method1_upper = zip(*method1_results)
+    kp = [0.05, 0.1, 0.2, 0.4]
+
+    # Plot method 1 with error bars
+    plt.errorbar(
+        kp,
+        method1_mse,
+        yerr=[
+            np.array(method1_mse) - np.array(method1_lower),
+            np.array(method1_upper) - np.array(method1_mse),
+        ],
+        fmt="o",
+        label=method1_label,
+        capsize=5,
+        markersize=markersize,
+        linewidth=linewidth,
+    )
+
+    # Add a horizontal line for MLMC minres mse
+    plt.axhline(
+        y=3.0870759359968266e-06,
+        color="black",
+        linestyle="--",
+        linewidth=linewidth,
+        label=f"MLMC MINRES MSE",
+    )
+
+    # Add semi-transparent error region around the constant line
+    xmin = 0.04
+    xmax = 0.45
+    plt.fill_between(
+        [xmin, xmax],
+        [2.330957660115031e-06, 2.330957660115031e-06],
+        [3.843194211878622e-06, 3.843194211878622e-06],
+        color="grey",
+        alpha=0.2,
+    )
+
+    # Log scales for both axes
+    plt.xscale("log")
+    plt.yscale("log")
+
+    # Labels, title, legend
+    plt.xlabel("$k_p$ value", fontsize=fontsize)
+    #plt.ylabel("Mean Squared Error (MSE)", fontsize=fontsize)
+    #plt.title("Mean Squared Error vs k_p Values with 95% Confidence Intervals", fontsize=fontsize)
+    plt.legend(fontsize=fontsize, loc="upper right")
+
+    # Ticks, grid, and axis limits
+    plt.xticks(kp, labels=kp, fontsize=fontsize)
+    plt.yticks(fontsize=fontsize)
+    plt.grid(True, which="both", linestyle="--")
+    plt.xlim(xmin, xmax)
+
+    # Adjust layout and save as PDF
+    plt.tight_layout()
+    plt.savefig("mse_vs_kp_with_intervals.pdf", format="pdf", bbox_inches="tight", dpi=300)
+
+    # Show the plot
+    plt.show()
+

@@ -8,6 +8,7 @@ from linsolver.itref import itref
 from dolfinx import la
 import scipy as sp
 import numpy as np
+from linsolver import itref
 
 
 class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
