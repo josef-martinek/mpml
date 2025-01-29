@@ -8,7 +8,6 @@ from linsolver.itref import itref
 from dolfinx import la
 import scipy as sp
 import numpy as np
-from linsolver import itref
 
 
 class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
@@ -19,9 +18,7 @@ class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
         a = form(a)
         L = form(L)
         A = assemble_matrix(a, bcs=[bc])
-        #A.assemble()
         b = assemble_vector(L)
-        #b.assemble()
         apply_lifting(b.array, [a], bcs=[[bc]])
         bc.set(b.array)
 
@@ -38,12 +35,8 @@ class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
         uh = Function(functionspace(msh, ("Lagrange", 1)))
         uh.x.array[:] = x[:]
         qoi = self._get_qoi_from_solution(uh, level)
-        evaluation_cost = self._get_eval_cost(hl)
+        evaluation_cost = self._get_eval_cost(level=level)
         return LognormalPDEEvaluation(qoi, evaluation_cost)
-    
-    def _get_eval_cost(self, hl):
-        matrix_order = ((1/hl)-1)**2
-        return matrix_order**(3/2)
     
     @staticmethod
     def _csr_mat_to_ndarray(A) -> np.ndarray:
