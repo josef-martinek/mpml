@@ -1,4 +1,4 @@
-from examples.mlmc_lognormal import LognormalPDESample
+from examples.mpml_lognormal_itref_simple import LognormalPDESampleSimple as sample_cls
 from examples.mlmc_lognormal import LognormalPDEModel as model_cls
 from estimator.mlmc_estimator import MLMCAdaptiveEstimator as adapt_alg
 import numpy as np
@@ -11,23 +11,23 @@ import functools
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
-random_seed = 1 #Change for different method testing!!!
+random_seed = 2 #Change for different method testing!!!
 logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = model_cls()
-Lmin = 1
+Lmin = 0
 Lmax = 10
 alpha = 2
 beta = 4
 
 # Initialize the MLMC algorithm
-mse_tol_array = [1.6e-5]
-num_runs_per_tolerance = 50
-num_workers = 10
+mse_tol_array = [2e-6]
+num_runs_per_tolerance = 1
+num_workers = 1
 
 # Number of times to run the simulation
 output_folder = "data/test/"
-this_file = "run_mlmc_estim_statistics_parallel.py"
+this_file = "run_mlmc_adapt_statistics.py"
 settings_folder = "examples/"
 
 
@@ -42,7 +42,7 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, mse_tol_id):
     Function to run a single simulation. run_simulation will be executed in parallel.
     """
     rng = np.random.default_rng(seed=random_seed + run_id + mse_tol_id)
-    sample = LognormalPDESample(rng=rng)
+    sample = sample_cls(rng=rng)
     try:
         logging.debug(f"Starting simulation run {run_id}")
         algorithm = adapt_alg(
@@ -52,7 +52,7 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, mse_tol_id):
         )
         # Measure runtime
         start_time = time.time()
-        algorithm.run(mse_tol=mse_tol, init_nsamp=20)
+        algorithm.run(mse_tol=mse_tol, init_nsamp=30)
         end_time = time.time()
 
         # Get the final estimator

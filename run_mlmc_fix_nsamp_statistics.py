@@ -18,7 +18,7 @@ model = model_cls()
 Lmin = 1
 
 # Initialize the MLMC algorithm
-num_samp_list = [np.array([10, 1]), np.array([20, 2])]
+num_samp_list = [np.array([1,1,1,1])]
 num_runs_per_tolerance = 10
 num_workers = 10
 

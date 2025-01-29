@@ -1,5 +1,5 @@
-from examples.mlmc_lognormal import LognormalPDESample
-from examples.mpml_lognormal_itref import MPLognormalPDEModelItref as model_cls
+from examples.mpml_lognormal_itref_simple import LognormalPDESampleSimple as sample_cls
+from examples.mpml_lognormal_itref_simple import MPLognormalPDEModelItrefSimple as model_cls
 from estimator.mpml_estimator import MPMLNonAdaptiveEstimator as alg
 from estimator.mpml_estimator import MPMLAdaptiveEstimator as adapt_alg
 import numpy as np
@@ -8,24 +8,25 @@ import time
 from utils.utils import get_git_commit_hash, save_commit_hash, copy_settings_to_output, addLoggingLevel, clear_fenics_cache, export_conda_environment
 from concurrent.futures import ProcessPoolExecutor
 import functools
+import traceback
 
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
 random_seed = 2013 #Change for different method testing!!!
-logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
+logging.basicConfig(level=logging.TRACE, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = model_cls()
-Lmin = 1
+Lmin = 0
 Lmax = 6
 alpha = 2
 beta = 4
 alpha_tol = 1
 beta_tol = 2
-k_p = 0.05
+k_p = 0.4
 
 # Initialize the MLMC algorithm
-num_samp_list = [np.array([1,1]), np.array([1,1,1]), np.array([1,1,1,1]), np.array([1,1,1,1,1])]
+num_samp_list = [np.array([1,1,1,1])]
 num_runs_per_tolerance = 1
 num_workers = 1
 
@@ -46,7 +47,7 @@ def run_simulation(run_id, num_samp, model, Lmin, num_samp_id):
     Function to run a single simulation. run_simulation will be executed in parallel.
     """
     rng = np.random.default_rng(seed=random_seed + run_id + num_samp_id)
-    sample = LognormalPDESample(rng=rng)
+    sample = sample_cls(rng=rng)
     adapt_alg_inst = adapt_alg(sample, model, Lmin, Lmax, alpha, beta, alpha_tol, beta_tol, k_p)
     comp_tol = adapt_alg_inst._get_comp_tol(Lmin+len(num_samp)-1)
     try:
@@ -76,6 +77,7 @@ def run_simulation(run_id, num_samp, model, Lmin, num_samp_id):
         }
     except Exception as e:
         logging.error(f"Error in simulation run {run_id}: {e}")
+        traceback.print_exc()
         return None
 
 

@@ -1,5 +1,5 @@
-from examples.mlmc_lognormal import LognormalPDESample
-from examples.mpml_lognormal_minres import MPLognormalPDEModelMinres as model_cls
+from examples.mpml_lognormal_itref_simple import LognormalPDESampleSimple as sample_cls
+from examples.mpml_lognormal_itref_simple import MPLognormalPDEModelItrefSimple as model_cls
 from estimator.mpml_estimator import MPMLAdaptiveEstimator as adapt_alg
 import numpy as np
 import logging
@@ -7,6 +7,7 @@ import time
 from utils.utils import get_git_commit_hash, save_commit_hash, copy_settings_to_output, addLoggingLevel, clear_fenics_cache, export_conda_environment
 from concurrent.futures import ProcessPoolExecutor
 import functools
+import traceback
 
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
@@ -15,22 +16,22 @@ random_seed = 206 #Change for different method testing!!!
 logging.basicConfig(level=logging.TRACE, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = model_cls()
-Lmin = 1
-Lmax = 6
+Lmin = 0
+Lmax = 5
 alpha = 2
 beta = 4
 alpha_tol = 1
 beta_tol = 2
-k_p = 0.05
+k_p = 0.2
 
 # Initialize the MLMC algorithm
-mse_tol_array = [8e-6]
-num_runs_per_tolerance = 5
-num_workers = 10
+mse_tol_array = [1.6e-5]
+num_runs_per_tolerance = 1
+num_workers = 1
 
 # Number of times to run the simulation
-output_folder = "data/"
-this_file = "run_mpml_estim_statistics_parallel.py"
+output_folder = "data/test/"
+this_file = "run_mpml_adapt_statistics.py"
 settings_folder = "examples/"
 
 
@@ -45,7 +46,7 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, alpha_tol, b
     Function to run a single simulation. run_simulation will be executed in parallel.
     """
     rng = np.random.default_rng(seed=random_seed + run_id + mse_tol_id)
-    sample = LognormalPDESample(rng=rng)
+    sample = sample_cls(rng=rng)
     try:
         logging.debug(f"Starting simulation run {run_id}")
         algorithm = adapt_alg(
@@ -58,7 +59,7 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, alpha_tol, b
         )
         # Measure runtime
         start_time = time.time()
-        algorithm.run(mse_tol=mse_tol, init_nsamp=50)
+        algorithm.run(mse_tol=mse_tol, init_nsamp=20)
         end_time = time.time()
 
         # Get the final estimator
@@ -80,6 +81,7 @@ def run_simulation(run_id, mse_tol, model, Lmin, Lmax, alpha, beta, alpha_tol, b
         }
     except Exception as e:
         logging.error(f"Error in simulation run {run_id}: {e}")
+        traceback.print_exc()
         return None
 
 
