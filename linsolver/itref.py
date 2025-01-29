@@ -21,14 +21,13 @@ class itref(LinsorverBase):
         - x (np.ndarray): Refined solution in double precision.
         - TODO
         """
-        # Ensure input matrix and vector are in double precision
         A = A.astype(self._eps)
         b = b.astype(self._eps)
 
         # Perform Cholesky decomposition in single precision
-        L_f = self._get_cholesky_factor(A.astype(self._eps_f))
-        y = self.forward_substitution(L=L_f.astype(self._eps_f), b=b.astype(self._eps_f))
-        x = self.backward_substitution(np.transpose(L_f).astype(self._eps_f), b=y.astype(self._eps_f))
+        L_f = self._get_cholesky_factor(A, prec=self._eps_f)
+        y = self.forward_substitution(L=L_f, b=b, prec=self._eps_f)
+        x = self.backward_substitution(U=np.transpose(L_f), b=y, prec=self._eps_f)
         x = x.astype(self._eps)
 
         rel_res = []
@@ -44,8 +43,8 @@ class itref(LinsorverBase):
             r = r.astype(self._eps_s)
 
             # Step 3: Solve for correction in single precision
-            y = self.forward_substitution(L=L_f.astype(self._eps_s), b=r.astype(self._eps_s))
-            x_update = self.backward_substitution(np.transpose(L_f).astype(self._eps_s), b=y.astype(self._eps_s))
+            y = self.forward_substitution(L=L_f, b=r, prec=self._eps_s)
+            x_update = self.backward_substitution(np.transpose(L_f), b=y, prec=self._eps_s)
 
             x_update = x_update.astype(self._eps)
             x = x.astype(self._eps) + x_update.astype(self._eps)
@@ -53,7 +52,7 @@ class itref(LinsorverBase):
         return x.astype(np.double), i, np.array(rel_res).astype(np.double)
     
     @staticmethod
-    def forward_substitution(L, b):
+    def forward_substitution(L, b, prec: np.floating):
         """
         Perform forward substitution to solve Lx = b, where L is a lower triangular matrix.
 
@@ -64,6 +63,8 @@ class itref(LinsorverBase):
         Returns:
             x (np.ndarray): Solution vector (n,).
         """
+        L = L.astype(prec)
+        b = b.astype(prec)
         n = L.shape[0]
         x = np.zeros_like(b, dtype=L.dtype)  # Solution vector with same dtype as L
 
@@ -78,7 +79,7 @@ class itref(LinsorverBase):
 
 
     @staticmethod
-    def backward_substitution(U, b):
+    def backward_substitution(U, b, prec: np.floating):
         """
         Perform backward substitution to solve Ux = b, where U is an upper triangular matrix.
 
@@ -89,6 +90,8 @@ class itref(LinsorverBase):
         Returns:
             x (np.ndarray): Solution vector (n,).
         """
+        U = U.astype(prec)
+        b = b.astype(prec)
         n = U.shape[0]
         x = np.zeros_like(b, dtype=U.dtype)  # Solution vector with same dtype as U
 
@@ -101,14 +104,15 @@ class itref(LinsorverBase):
 
         return x
     
-    def _get_cholesky_factor(self, A):
+    def _get_cholesky_factor(self, A, prec: np.floating):
+        A = A.astype(prec)
         if self._eps_f == np.half:
-            return self.cholesky_factorisation(A)
+            return self.cholesky_factorisation(A, prec)
         else:
             return np.linalg.cholesky(A)
         
     @staticmethod    
-    def cholesky_factorisation(A):
+    def cholesky_factorisation(A, prec: np.floating):
         """
         Perform Cholesky factorization on a positive-definite symmetric matrix A.
         
@@ -118,6 +122,7 @@ class itref(LinsorverBase):
         Returns:
         L (ndarray): A lower triangular matrix such that A = L @ L.T.
         """
+        A = A.astype(prec)
         # Ensure the matrix is square
         n, m = A.shape
         if n != m:
