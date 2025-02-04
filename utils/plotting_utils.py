@@ -266,7 +266,7 @@ def plot_mse_with_confidence_intervals(tolerances, method1_results, method2_resu
                 fmt="o--", label=method2_label, capsize=5, markersize=markersize, linewidth=linewidth)
 
     # Add mse tolerance line
-    plt.loglog(tolerances, tolerances, marker="x", label="MSE Tolerance", linewidth=linewidth, markersize=markersize)
+    #plt.loglog(tolerances, tolerances, marker="x", label="MSE Tolerance", linewidth=linewidth, markersize=markersize)
 
     # Adjust labels, title, and legend
     plt.xscale("log")

@@ -12,21 +12,21 @@ addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
 random_seed = 2 #Change for different method testing!!!
-logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
+logging.basicConfig(level=logging.DEBUG, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = model_cls()
-Lmin = 0
+Lmin = 1
 Lmax = 10
 alpha = 2
 beta = 4
 
 # Initialize the MLMC algorithm
-mse_tol_array = [2e-6]
+mse_tol_array = [2e-8]
 num_runs_per_tolerance = 1
 num_workers = 1
 
 # Number of times to run the simulation
-output_folder = "data/test/"
+output_folder = "data/mlmc_simple_reference_sol/"
 this_file = "run_mlmc_adapt_statistics.py"
 settings_folder = "examples/"
 

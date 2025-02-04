@@ -66,3 +66,7 @@ class LognormalPDEModel(ModelBase):
     @property
     def m(self):
         return self._m
+    
+    @property
+    def decay_rate_q(self):
+        return self._decay_rate_q
