@@ -1,0 +1,16 @@
+name: mlmc
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - fenics-dolfinx
+  - mpich
+  - pyvista
+  - matplotlib
+  - mpi4py
+  - numpy
+  - petsc4py
+  - pychop==0.3.0
+  - pyvista
+  - scipy
+
