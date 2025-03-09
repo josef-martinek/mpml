@@ -1,6 +1,6 @@
-from examples.mlmc_lognormal import LognormalPDESample
-from examples.mlmc_lognormal_minres_fixtol import MLLognormalPDEModelMinres
-from estimator.mlmc_estimator import MLMCAdaptiveEstimator
+from setup.mlmc_lognormal import LognormalPDESample
+from setup.mlmc_lognormal_minres_fixtol import MLLognormalPDEModelMinres
+from core.estimator.mlmc_estimator import MLMCAdaptiveEstimator
 import numpy as np
 import logging
 import time

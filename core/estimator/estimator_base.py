@@ -1,5 +1,5 @@
-from model.model_base import ModelBase
-from sample.sample_base import SampleBase
+from core.model.model_base import ModelBase
+from core.sample.sample_base import SampleBase
 import numpy as np
 from abc import ABC, abstractmethod
 import logging

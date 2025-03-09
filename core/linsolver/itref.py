@@ -1,5 +1,5 @@
 import numpy as np
-from linsolver.linsorver_base import LinsorverBase
+from core.linsolver.linsorver_base import LinsorverBase
 
 class itref(LinsorverBase):
     

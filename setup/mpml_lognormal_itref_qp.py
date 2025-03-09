@@ -1,14 +1,14 @@
-from model.model_base import MPMLModel, ModelEvaluationBase
-from examples.mlmc_lognormal import LognormalPDEModel, LognormalPDEEvaluation
+from core.model.model_base import MPMLModel, ModelEvaluationBase
+from setup.mlmc_lognormal import LognormalPDEModel, LognormalPDEEvaluation
 from dolfinx.fem import form, apply_lifting, Function, functionspace
 from dolfinx.fem import assemble_matrix, assemble_vector, locate_dofs_topological
 from dolfinx.mesh import locate_entities_boundary
 import logging
-from examples.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
+from setup.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
 import numpy as np
-from linsolver.itref_qp import itrefQP
-from sample.sample_base import SampleBase
-from examples.mpml_lognormal_itref import MPLognormalPDEModelItref
+from core.linsolver.itref_qp import itrefQP
+from core.sample.sample_base import SampleBase
+from setup.mpml_lognormal_itref import MPLognormalPDEModelItref
 import time
 
 

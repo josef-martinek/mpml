@@ -1,8 +1,8 @@
-from model.model_base import ModelBase, ModelEvaluationBase
-from sample.sample_base import SampleBase
+from core.model.model_base import ModelBase, ModelEvaluationBase
+from core.sample.sample_base import SampleBase
 import numpy as np
 from dolfinx.fem.petsc import LinearProblem
-from examples.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
+from setup.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
 
 
 class LognormalPDESample(SampleBase):

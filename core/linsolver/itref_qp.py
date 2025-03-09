@@ -1,5 +1,5 @@
 import numpy as np
-from linsolver.itref import itref
+from core.linsolver.itref import itref
 from pychop.chop import chop
 
 class PrecisionSetting:

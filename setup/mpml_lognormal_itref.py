@@ -1,10 +1,10 @@
-from model.model_base import MPMLModel, ModelEvaluationBase
-from examples.mlmc_lognormal import LognormalPDEModel, LognormalPDEEvaluation
+from core.model.model_base import MPMLModel, ModelEvaluationBase
+from setup.mlmc_lognormal import LognormalPDEModel, LognormalPDEEvaluation
 from dolfinx.fem import form, apply_lifting, Function, functionspace
 from dolfinx.fem import assemble_matrix, assemble_vector
 import logging
-from examples.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
-from linsolver.itref import itref
+from setup.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
+from core.linsolver.itref import itref
 from dolfinx import la
 import scipy as sp
 import numpy as np

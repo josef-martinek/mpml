@@ -1,5 +1,5 @@
-from examples.mlmc_lognormal import LognormalPDESample, LognormalPDEModel
-from estimator.mlmc_estimator import MLMCNonAdaptiveEstimator
+from setup.mlmc_lognormal import LognormalPDESample, LognormalPDEModel
+from core.estimator.mlmc_estimator import MLMCNonAdaptiveEstimator
 import numpy as np
 import logging
 import time

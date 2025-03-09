@@ -1,19 +1,15 @@
-from model.model_base import ModelEvaluationBase
-from examples.mlmc_lognormal import LognormalPDEModel, LognormalPDEEvaluation
+from core.model.model_base import MPMLModel, ModelEvaluationBase
+from setup.mlmc_lognormal import LognormalPDEModel, LognormalPDEEvaluation
 from dolfinx.fem import form, apply_lifting, Function, functionspace
 from dolfinx.fem.petsc import assemble_matrix, assemble_vector
 import logging
-from examples.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
-from linsolver.minres import minres
+from setup.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
+from core.linsolver.minres import minres
 
 
-class MLLognormalPDEModelMinres(LognormalPDEModel):
+class MPLognormalPDEModelMinres(MPMLModel, LognormalPDEModel):
 
-    def __init__(self, visualise=False):
-        super().__init__(visualise)
-        self._comp_tol = 1e-10
-
-    def evaluate(self, level, sample) -> ModelEvaluationBase:
+    def evaluate(self, level, sample, comp_tol) -> ModelEvaluationBase:
         hl = self.get_hl(level)
         a, L, bc = PDE.setup_fenics_problem(hl, sample, self._decay_rate_q)
         a = form(a)
@@ -25,7 +21,7 @@ class MLLognormalPDEModelMinres(LognormalPDEModel):
         apply_lifting(b.array, [a], bcs=[[bc]])
         bc.set(b.array)
 
-        x, num_it, conv_reason, flops_performed = minres.solve_system(A=A, b=b, rtol=self._comp_tol)
+        x, num_it, conv_reason, flops_performed = minres.solve_system(A=A, b=b, rtol=comp_tol)
 
         logging.trace(f'Iteration number on level {level} is {num_it}')
         logging.trace(f'Convergence reason: {conv_reason}')

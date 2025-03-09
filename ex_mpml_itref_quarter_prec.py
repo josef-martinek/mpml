@@ -1,6 +1,6 @@
-from examples.mpml_lognormal_itref_qp import LognormalPDESampleQP
-from examples.mpml_lognormal_itref_qp import MPLognormalPDEModelItrefQP
-from estimator.mpml_estimator import MPMLAdaptiveEstimator
+from setup.mpml_lognormal_itref_qp import LognormalPDESampleQP
+from setup.mpml_lognormal_itref_qp import MPLognormalPDEModelItrefQP
+from core.estimator.mpml_estimator import MPMLAdaptiveEstimator
 import numpy as np
 import logging
 import time

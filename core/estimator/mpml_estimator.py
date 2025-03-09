@@ -1,6 +1,6 @@
-from estimator.mlmc_estimator import MLMCNonAdaptiveEstimator, MLMCAdaptiveEstimator
+from core.estimator.mlmc_estimator import MLMCNonAdaptiveEstimator, MLMCAdaptiveEstimator
 import numpy as np
-from model.model_base import MPMLModel
+from core.model.model_base import MPMLModel
 
 
 class MPMLNonAdaptiveEstimator(MLMCNonAdaptiveEstimator):
