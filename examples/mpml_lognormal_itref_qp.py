@@ -6,13 +6,13 @@ from dolfinx.mesh import locate_entities_boundary
 import logging
 from examples.lognormal_pde_setup import PDEwLognormalRandomCoeff as PDE
 import numpy as np
-from linsolver.itrefSimple import itrefSimple
+from linsolver.itref_qp import itrefQP
 from sample.sample_base import SampleBase
 from examples.mpml_lognormal_itref import MPLognormalPDEModelItref
 import time
 
 
-class LognormalPDESampleSimple(SampleBase):
+class LognormalPDESampleQP(SampleBase):
 
     def __init__(self, rng: np.random.Generator):
         self._s = 1
@@ -23,7 +23,7 @@ class LognormalPDESampleSimple(SampleBase):
         return self._std*self._rng.standard_normal(self._s)
 
 
-class MPLognormalPDEModelItrefSimple(MPLognormalPDEModelItref):
+class MPLognormalPDEModelItrefQP(MPLognormalPDEModelItref):
 
     def evaluate(self, level, sample, comp_tol) -> ModelEvaluationBase:
         hl = self.get_hl(level)
@@ -74,10 +74,10 @@ class MPLognormalPDEModelItrefSimple(MPLognormalPDEModelItref):
     @staticmethod
     def _get_itref(hl): #TODO switch to hl
         if np.allclose(hl, 1/4):
-            return itrefSimple("q", "h", "h", "h")
+            return itrefQP("q", "h", "h", "h")
         elif np.allclose(hl, 1/8):
-            return itrefSimple("h", "h", "s", "s")
+            return itrefQP("h", "h", "s", "s")
         elif np.allclose(hl, 1/16):
-            return itrefSimple("h", "h", "s", "s")
+            return itrefQP("h", "h", "s", "s")
         else:
-            return itrefSimple("h", "s", "s", "s")
+            return itrefQP("h", "s", "s", "s")

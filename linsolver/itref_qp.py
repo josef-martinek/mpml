@@ -6,7 +6,7 @@ class PrecisionSetting:
     setting = {"q": 'q43', "h": np.half, "s": np.single, "d": np.double}
 
 
-class itrefSimple(itref):
+class itrefQP(itref):
     
     def __init__(self, eps_f, eps_s, eps, eps_r):
         if "q" in [eps_s, eps, eps_r]:
@@ -29,7 +29,7 @@ class itrefSimple(itref):
             x (np.ndarray): Solution vector (n,).
         """
         if prec != 'q43':
-            return super(itrefSimple, itrefSimple).forward_substitution(L, b, prec)
+            return super(itrefQP, itrefQP).forward_substitution(L, b, prec)
         else:
             cp = chop(prec=prec)
             n = L.shape[0]
@@ -61,7 +61,7 @@ class itrefSimple(itref):
             x (np.ndarray): Solution vector (n,).
         """
         if prec != 'q43':
-            return super(itrefSimple, itrefSimple).backward_substitution(U, b, prec)
+            return super(itrefQP, itrefQP).backward_substitution(U, b, prec)
         else:
             cp = chop(prec=prec)
             n = U.shape[0]

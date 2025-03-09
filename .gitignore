@@ -172,7 +172,3 @@ cython_debug/
 
 # VScode
 .vscode
-
-#simulation data
-data/
-plots/
