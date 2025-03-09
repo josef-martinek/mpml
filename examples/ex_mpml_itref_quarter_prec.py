@@ -1,3 +1,15 @@
+"""
+This script runs the adaptive Mixed Precision MLMC algorithm for estimating
+expectation of a quantity of interest.
+The problem is given by an elliptic PDE with lognormal random coefficient, the
+quantity of interest is given by the integral over the domain.
+Low precision Cholesky factorisation with iterative refinement is used as the
+linear solver. Iterative refinement setup is specified in the class
+LognormalPDESampleQP. Stopping criterion for iterative refinement is chosen
+adaptively.
+
+"""
+
 from setup.mpml_lognormal_itref_qp import LognormalPDESampleQP
 from setup.mpml_lognormal_itref_qp import MPLognormalPDEModelItrefQP
 from core.estimator.mpml_estimator import MPMLAdaptiveEstimator

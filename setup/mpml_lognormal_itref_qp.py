@@ -72,7 +72,7 @@ class MPLognormalPDEModelItrefQP(MPLognormalPDEModelItref):
         return LognormalPDEEvaluation(qoi, evaluation_cost)
     
     @staticmethod
-    def _get_itref(hl): #TODO switch to hl
+    def _get_itref(hl):
         if np.allclose(hl, 1/4):
             return itrefQP("q", "h", "h", "h")
         elif np.allclose(hl, 1/8):

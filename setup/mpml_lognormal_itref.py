@@ -47,7 +47,7 @@ class MPLognormalPDEModelItref(MPMLModel, LognormalPDEModel):
         return v.array
     
     @staticmethod
-    def _get_itref(hl): #TODO switch to hl
+    def _get_itref(hl):
         if np.allclose(hl, 1/4):
             return itref(np.half, np.half, np.half, np.half)
         elif np.allclose(hl, 1/8):
