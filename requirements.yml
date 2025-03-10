@@ -1,16 +1,17 @@
-name: mlmc
+name: mpml
 channels:
   - defaults
   - conda-forge
 dependencies:
-  - fenics-dolfinx
-  - mpich
+  - python
+  - fenics-dolfinx=0.9.0
+  - mpi4py=4.0.1 # required by fenics
   - pyvista
   - matplotlib
-  - mpi4py
   - numpy
-  - petsc4py
-  - pychop==0.3.0
-  - pyvista
   - scipy
-
+  - pip
+  - pip:
+      - pychop
+      - pandas # required by pychop
+      - torch # required by pychop
