@@ -5,7 +5,7 @@ The problem is given by an elliptic PDE with lognormal random coefficient, the
 quantity of interest is given by the integral over the domain.
 Low precision Cholesky factorisation with iterative refinement is used as the
 linear solver. Iterative refinement setup is specified in the class
-LognormalPDESampleQP. Stopping criterion for iterative refinement is chosen
+MPLognormalPDEModelItref. Stopping criterion for iterative refinement is chosen
 adaptively.
 
 """
