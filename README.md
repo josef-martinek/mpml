@@ -3,6 +3,6 @@ Implementation of the standard multilevel Monte Carlo method (MLMC) and the mixe
 ## Related publications
 * J. Martínek, E. Carson, and R. Scheichl. **[Exploiting Inexact Computations in Multilevel Sampling Methods](https://arxiv.org/abs/2503.05533)**. arXiv preprint 3/2025.
 
-Scripts generating data from figures in arXiv preprint 3/2025 can be found in **[examples/figures/](./examples/figures/)**.
+Scripts generating data from figures in arXiv preprint 3/2025 can be found in **[examples/figures/](./examples/figures/)**. To reproduce the data from a particular figure, run the script located in the appropriate folder. The file "git_commit.txt" in each folder contains the hash of the commit used to generate the data. It might be necessary to adjust the number of workers for parallel execution. For each MLMC and MPML algorithm run, the script outputs the resulting estimate, the number of samples used on each level, and the cost per sample on each level. From this data the desired algorithm statistics can be straightforwardly computed.
 ## Dependencies
 The list of dependencies can be found in **[`requirements.yml`](./requirements.yml)**.
