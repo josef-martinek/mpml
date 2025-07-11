@@ -34,9 +34,9 @@ class LognormalPDEEvaluation(ModelEvaluationBase):
 class LognormalPDEModel(ModelBase):
     
     def __init__(self, visualise=False):
-        self._h0 = 1/4
-        self._m = 2
-        self._decay_rate_q = 2
+        self._h0 = 0.25
+        self._m = 2.
+        self._decay_rate_q = 2.
         self._visualise = visualise
 
     def evaluate(self, level, sample) -> ModelEvaluationBase:
