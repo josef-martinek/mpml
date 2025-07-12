@@ -56,7 +56,7 @@ class LognormalMinresMonitor(LognormalPDEModel):
         bc.set(b.array)
 
         # Solve the system and monitor intermediate solutions
-        x, num_it, conv_reason, iterates, rel_residuals = minresMonitor.solve_system(A=A, b=b, rtol=None)
+        x, num_it, conv_reason, iterates, rel_residuals = minresMonitor.solve_system(A=A, b=b)
 
         logging.trace(f'Iteration number on level {level} is {num_it}')
         logging.trace(f'Convergence reason: {conv_reason}')

@@ -34,7 +34,7 @@ class minres(LinsorverBase):
 class minresMonitor(LinsorverBase):
 
     @staticmethod
-    def solve_system(A, b, rtol=None):
+    def solve_system(A, b):
         x = A.createVecRight()
 
         ksp = PETSc.KSP().create()
@@ -42,8 +42,7 @@ class minresMonitor(LinsorverBase):
         ksp.setType("minres")
         ksp.getPC().setType("none")
 
-        if rtol is not None:
-            ksp.setTolerances(rtol=rtol)
+        ksp.setTolerances(maxits=len(b.array))
 
         # Compute norm of right-hand side for relative residuals
         b_norm = b.norm()
