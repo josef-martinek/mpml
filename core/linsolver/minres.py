@@ -42,7 +42,7 @@ class minresMonitor(LinsorverBase):
         ksp.setType("minres")
         ksp.getPC().setType("none")
 
-        ksp.setTolerances(maxits=len(b.array))
+        ksp.setTolerances(max_it=len(b.array))
 
         # Compute norm of right-hand side for relative residuals
         b_norm = b.norm()
