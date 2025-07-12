@@ -68,7 +68,7 @@ class minresMonitor(LinsorverBase):
 
         if conv_reason < 0:
             raise ValueError(
-                f"Solver did not converge. Reason: {conv_reason} ({PETSc.KSP.ConvergedReason(conv_reason).name})"
+                f"Solver did not converge. Reason: {conv_reason}"
             )
 
         return x, num_it, conv_reason, iterates, rel_residuals
