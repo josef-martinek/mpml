@@ -56,7 +56,7 @@ class minresMonitor(LinsorverBase):
             rel_residuals.append(rel_r)
 
             # Store current solution iterate
-            x_iter = ksp.getSolution()
+            x_iter = ksp.getSolution().copy()
             iterates.append(x_iter)
 
         ksp.setMonitor(monitor)
