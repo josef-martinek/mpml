@@ -26,17 +26,17 @@ class MPLognormalPDEModelMinres(MPMLModel, LognormalPDEModel):
         logging.trace(f'Iteration number on level {level} is {num_it}')
         logging.trace(f'Convergence reason: {conv_reason}')
         logging.trace(f'Number of flops per iteration: {flops_performed/num_it}\n')
-       
+
         msh = PDE.get_mesh(hl)
         uh = Function(functionspace(msh, ("Lagrange", 1)))
         uh.x.array[:] = x.array[:]
         qoi = self._get_qoi_from_solution(uh, level)
         evaluation_cost = self._get_eval_cost(flops_performed)
         return LognormalPDEEvaluation(qoi, evaluation_cost)
-    
+
     def _get_eval_cost(self, nflops_per_solve):
         return nflops_per_solve
-    
+
 
 class LognormalMinresMonitor(LognormalPDEModel):
 
