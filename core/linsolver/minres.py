@@ -1,5 +1,6 @@
 from core.linsolver.linsorver_base import LinsorverBase
 from petsc4py import PETSc
+import logging
 
 
 class minres(LinsorverBase):
@@ -29,7 +30,7 @@ class minres(LinsorverBase):
             raise ValueError(f"Solver did not converge by achieving specified relative residual tolerance. Reason: {conv_reason}")
 
         return x, num_it, conv_reason, flops_performed
-    
+
 
 class minresMonitor(LinsorverBase):
 
@@ -42,7 +43,7 @@ class minresMonitor(LinsorverBase):
         ksp.setType("minres")
         ksp.getPC().setType("none")
 
-        ksp.setTolerances(max_it=len(b.array))
+        ksp.setTolerances(max_it=20000)
 
         # Compute norm of right-hand side for relative residuals
         b_norm = b.norm()
@@ -67,8 +68,7 @@ class minresMonitor(LinsorverBase):
         conv_reason = ksp.getConvergedReason()
 
         if conv_reason < 0:
-            raise ValueError(
-                f"Solver did not converge. Reason: {conv_reason}"
-            )
+            logging.warning(f"Solver did not converge. Reason: {conv_reason}.\n")
+            logging.warning(f"Final relative residual is {rel_residuals[-1]}")
 
         return x, num_it, conv_reason, iterates, rel_residuals
