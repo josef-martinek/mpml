@@ -18,7 +18,7 @@ class itref(LinsorverBase):
         - TODO
 
         Returns:
-        - x (np.ndarray): Refined solution in double precision.
+        - x (np.ndarray): Refined solution
         - TODO
         """
         A = A.astype(self._eps)
