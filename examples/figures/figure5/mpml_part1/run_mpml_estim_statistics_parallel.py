@@ -11,7 +11,7 @@ import functools
 addLoggingLevel('TRACE', logging.DEBUG - 5)
 
 # Set the random seed for reproducibility
-random_seed = 206 #Change for different method testing!
+random_seed = 1692215 #Change for different method testing!
 logging.basicConfig(level=logging.INFO, format='{levelname}: {message}', style='{')
 # Initialize the sample and model
 model = model_cls()
@@ -21,15 +21,15 @@ alpha = 2
 beta = 4
 alpha_tol = 1
 beta_tol = 2
-k_p = 0.05
+k_p = 0.1
 
 # Initialize the MLMC algorithm
-mse_tol_array = [4e-6, 2e-6, 1e-6, 5e-7]
+mse_tol_array = [2e-6]
 num_runs_per_tolerance = 1000
 num_workers = 70
 
 # Number of times to run the simulation
-output_folder = "data/mpml_minres1/"
+output_folder = "data/mpml_minres_kp1/"
 this_file = "run_mpml_estim_statistics_parallel.py"
 settings_folder = "examples/"
 
