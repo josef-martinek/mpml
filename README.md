@@ -7,4 +7,4 @@ Scripts generating data from figures in arXiv preprint 3/2025 can be found in **
 ## Installation
 We recommend using a Linux-based OS for installation and execution. The list of dependencies can be found in **[`requirements.yml`](./requirements.yml)**. To create the required environment using Conda, clone this repository and run the following command from the root folder:
 
-```conda env create -f environment.yml ```
+```conda env create -f requirements.yml ```
