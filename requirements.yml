@@ -9,9 +9,4 @@ dependencies:
   - pyvista=0.44.2
   - matplotlib=3.10.0
   - numpy=2.2.1
-  - pip
-  - pip:
-      - scipy==1.15.1
-      - pychop==0.3.0
-      - pandas==2.2.3 # required by pychop
-      - torch==2.5.1 # required by pychop
+  - scipy=1.15.1
