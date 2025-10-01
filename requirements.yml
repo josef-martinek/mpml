@@ -11,3 +11,8 @@ dependencies:
   - matplotlib=3.10.*
   - numpy=2.2.*
   - scipy=1.15.*
+  - pip #Packages from this line below required only if quarter precision is needed
+  - pip:
+    - pychop==0.3.0
+    - pandas==2.2.*
+    - torch==2.5.*
